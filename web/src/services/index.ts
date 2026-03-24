@@ -1,0 +1,6 @@
+export { api } from './client'
+export { authService } from './auth'
+export { patientService } from './patients'
+export { surgeryService } from './surgery'
+export { dashboardService } from './dashboard'
+export { reportService } from './reports'
