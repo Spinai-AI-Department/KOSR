@@ -196,13 +196,13 @@ export function ProfilePage() {
                     label="진료과"
                     value={infoForm.department}
                     onChange={(v) => handleInfoChange("department", v)}
-                    placeholder="정형외과"
+                    placeholder="신경외과"
                   />
                   <Field
                     label="직책"
                     value={infoForm.role}
                     onChange={(v) => handleInfoChange("role", v)}
-                    placeholder="정형외과 전문의"
+                    placeholder="신경외과 전문의"
                   />
                 </div>
               </div>

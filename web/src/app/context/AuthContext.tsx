@@ -37,7 +37,7 @@ const DEMO_ACCOUNTS: { email: string; password: string; user: User }[] = [
       phone: "010-1234-5678",
       specialty: "척추외과",
       licenseNumber: "12345",
-      department: "정형외과",
+      department: "신경외과",
     },
   },
   {
@@ -46,7 +46,7 @@ const DEMO_ACCOUNTS: { email: string; password: string; user: User }[] = [
     user: {
       id: "2",
       name: "이수연",
-      role: "정형외과 전문의",
+      role: "신경외과 전문의",
       hospital: "세브란스병원",
       email: "doctor@ksor.kr",
       phone: "010-9876-5432",

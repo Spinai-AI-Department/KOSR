@@ -179,7 +179,7 @@ export function LoginPage() {
                 onClick={() => fillDemo("doctor")}
                 className="flex-1 py-2 border border-gray-300 rounded-lg text-xs text-gray-700 hover:bg-white transition-colors"
               >
-                정형외과 전문의
+                신경외과 전문의
               </button>
             </div>
           </div>
