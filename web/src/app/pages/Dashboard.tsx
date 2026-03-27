@@ -18,15 +18,15 @@ const surgeryTypeData = [
 
 export function Dashboard() {
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl mb-2">KOMISS / KSOR</h1>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl mb-2">KOMISS / KSOR</h1>
         <p className="text-gray-600">개인 성과 분석 대시보드</p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 md:mb-8">
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-2">총 수술 건수</div>
           <div className="text-4xl">250</div>
@@ -46,7 +46,7 @@ export function Dashboard() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 md:mb-8">
         {/* VAS & ODI Chart */}
         <Card className="p-6 bg-white">
           <h3 className="text-lg mb-4">환자 회복 추이 (VAS & ODI)</h3>

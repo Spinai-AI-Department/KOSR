@@ -353,7 +353,7 @@ function ComplicationTab() {
       {/* Patient Selector */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
         <h2 className="text-base text-gray-900 mb-4">대상 환자 선택</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm text-gray-600 mb-1.5">Patient ID</label>
             <input
@@ -379,7 +379,7 @@ function ComplicationTab() {
       </div>
 
       {/* Conversion + Reoperation */}
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* 수술 중 전환 */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <h2 className="text-base text-gray-900 mb-5">수술 중 전환 (Conversion to open)</h2>
@@ -445,7 +445,7 @@ function ComplicationTab() {
       {/* 합병증 세부 기록 */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <h2 className="text-base text-gray-900 mb-5">합병증 세부 기록</h2>
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* 신경계 합병증 */}
           <div>
             <h3 className="text-sm text-gray-800 mb-4">신경계 합병증 (Neurological)</h3>
@@ -535,7 +535,7 @@ function ComplicationTab() {
       {/* 중증도 및 기록 */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <h2 className="text-base text-gray-900 mb-5">중증도 및 기록 (Severity &amp; Notes)</h2>
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* 합병증 발생일 */}
           <div>
             <label className="block text-sm text-gray-600 mb-1.5">
@@ -624,10 +624,10 @@ export function PatientTracking() {
   ];
 
   return (
-    <div className="p-8 min-h-screen bg-gray-50">
+    <div className="p-4 md:p-8 min-h-screen bg-gray-50">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl text-gray-900">KOMISS / KSOR Registry</h1>
+        <h1 className="text-xl md:text-2xl text-gray-900">KOMISS / KSOR Registry</h1>
         <p className="text-gray-500 mt-1">Patient Management &amp; Follow-up Tracker</p>
       </div>
 

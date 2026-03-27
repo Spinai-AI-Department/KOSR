@@ -87,7 +87,7 @@ export function ProfilePage() {
   const avatarInitial = user?.name?.[0] ?? "?";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       {/* Toast */}
       {toast && (
         <div
@@ -155,7 +155,7 @@ export function ProfilePage() {
                 <h2 className="text-sm text-gray-500 mb-4 flex items-center gap-2">
                   <User className="w-4 h-4" /> 개인 정보
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field
                     label="이름"
                     value={infoForm.name}
@@ -185,7 +185,7 @@ export function ProfilePage() {
                 <h2 className="text-sm text-gray-500 mb-4 flex items-center gap-2">
                   <Building2 className="w-4 h-4" /> 소속 정보
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field
                     label="소속 병원"
                     value={infoForm.hospital}
@@ -212,7 +212,7 @@ export function ProfilePage() {
                 <h2 className="text-sm text-gray-500 mb-4 flex items-center gap-2">
                   <Stethoscope className="w-4 h-4" /> 전문 정보
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field
                     label="전문 분야"
                     value={infoForm.specialty}

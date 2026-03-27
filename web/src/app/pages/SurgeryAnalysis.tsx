@@ -39,14 +39,14 @@ const patientOutcomes = [
 
 export function SurgeryAnalysis() {
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl mb-2">성과 분석</h1>
+          <h1 className="text-2xl md:text-3xl mb-2">성과 분석</h1>
           <p className="text-gray-600">환자별 수술 결과 및 성과 데이터 분석</p>
         </div>
         <Select defaultValue="all">
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="기간 선택" />
           </SelectTrigger>
           <SelectContent>
@@ -59,7 +59,7 @@ export function SurgeryAnalysis() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="p-6 bg-white">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-gray-600">평균 VAS 개선도</div>
@@ -95,7 +95,7 @@ export function SurgeryAnalysis() {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Recovery Timeline */}
         <Card className="p-6 bg-white">
           <h3 className="text-lg mb-4">평균 회복 추이 (VAS & ODI)</h3>
@@ -131,7 +131,7 @@ export function SurgeryAnalysis() {
       </div>
 
       {/* Charts Row 2 */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Approach Comparison */}
         <Card className="p-6 bg-white">
           <h3 className="text-lg mb-4">수술 접근법별 비교 분석</h3>
@@ -170,9 +170,10 @@ export function SurgeryAnalysis() {
       </div>
 
       {/* Patient Details Table */}
-      <Card className="p-6 bg-white">
+      <Card className="p-4 md:p-6 bg-white">
         <h3 className="text-lg mb-4">최근 환자 성과 상세</h3>
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px]">
           <thead>
             <tr className="border-b border-gray-200">
               <th className="text-left py-3 px-4 text-sm text-gray-600">환자 ID</th>
@@ -207,6 +208,7 @@ export function SurgeryAnalysis() {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

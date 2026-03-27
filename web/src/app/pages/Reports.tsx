@@ -21,10 +21,10 @@ const surgeryOutcomes = [
 
 export function Reports() {
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl mb-2">리포트</h1>
+          <h1 className="text-2xl md:text-3xl mb-2">리포트</h1>
           <p className="text-gray-600">2026년 1월 - 6월 성과 리포트</p>
         </div>
         <div className="flex gap-3">
@@ -40,7 +40,7 @@ export function Reports() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-1">총 수술 건수</div>
           <div className="text-3xl mb-1">137건</div>
@@ -64,7 +64,7 @@ export function Reports() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Monthly Surgery Volume */}
         <Card className="p-6 bg-white">
           <h3 className="text-lg mb-4">월별 수술 건수 및 합병증</h3>
@@ -99,9 +99,10 @@ export function Reports() {
       </div>
 
       {/* Detailed Table */}
-      <Card className="p-6 bg-white">
+      <Card className="p-4 md:p-6 bg-white">
         <h3 className="text-lg mb-4">주요 지표 상세</h3>
-        <table className="w-full">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[500px]">
           <thead>
             <tr className="border-b border-gray-200">
               <th className="text-left py-3 px-4 text-sm text-gray-600">항목</th>
@@ -157,6 +158,7 @@ export function Reports() {
             </tr>
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );

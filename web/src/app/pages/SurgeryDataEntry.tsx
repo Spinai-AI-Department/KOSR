@@ -223,10 +223,10 @@ export function SurgeryDataEntry() {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-gray-50">
+    <div className="p-4 md:p-8 min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl text-gray-900">KSOR 수술 정보 입력</h1>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl text-gray-900">KSOR 수술 정보 입력</h1>
         <p className="text-gray-500 mt-1">Korean Spine Outcomes Registry — Surgery Data Entry</p>
       </div>
 
@@ -234,7 +234,7 @@ export function SurgeryDataEntry() {
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Demographics</p>
         <h2 className="text-base text-gray-900 mb-5">환자 기본 정보</h2>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <FieldLabel label="Patient ID" />
             <input type="text" value={patientId} onChange={(e) => setPatientId(e.target.value)} placeholder="예: 201933070" className={inputCls} />
@@ -267,7 +267,7 @@ export function SurgeryDataEntry() {
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Comorbidities</p>
         <h2 className="text-base text-gray-900 mb-5">동반 질환</h2>
-        <div className="grid grid-cols-3 gap-x-6 gap-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5">
           <div>
             <FieldLabel label="당뇨병" sub="Diabetes" ksor="Core" note="Most commonly collected comorbidity across registries" />
             <RadioGroup value={diabetes} onChange={setDiabetes} />
@@ -299,7 +299,7 @@ export function SurgeryDataEntry() {
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Diagnosis</p>
         <h2 className="text-base text-gray-900 mb-5">진단</h2>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <FieldLabel label="진단명 (Primary Diagnosis)" ksor="Core" note="HNP, Stenosis, Spondylolisthesis, DDD, etc." />
             <Dropdown
@@ -326,7 +326,7 @@ export function SurgeryDataEntry() {
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Surgery</p>
         <h2 className="text-base text-gray-900 mb-5">수술 정보</h2>
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div>
             <FieldLabel label="수술 방법 (Procedure Type)" ksor="Core" note="Decompression, fusion, disc replacement, etc." />
             <Dropdown
@@ -373,7 +373,7 @@ export function SurgeryDataEntry() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 pt-5 border-t border-gray-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 border-t border-gray-100">
           <div>
             <FieldLabel label="임플란트 사용 (Implant Used)" ksor="Core" note="Spine Tango has detailed implant catalogue" />
             <div className="space-y-2.5 mt-1">
@@ -414,7 +414,7 @@ export function SurgeryDataEntry() {
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">KSOR Endoscopic</p>
         <h2 className="text-base text-gray-900 mb-5">내시경 세부 정보</h2>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* 접근법 */}
           <div>
             <FieldLabel
@@ -554,7 +554,7 @@ export function SurgeryDataEntry() {
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Complications</p>
         <h2 className="text-base text-gray-900 mb-5">합병증</h2>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
             <FieldLabel label="수술 중 합병증" sub="Intraoperative Complication" ksor="Core" note="Dural tear, nerve injury, etc." />
             <RadioGroup value={intraoopComp} onChange={setIntraoopComp} />

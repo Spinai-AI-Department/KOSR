@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { Link, Outlet, useLocation, Navigate } from "react-router";
-import { LayoutGrid, Users, BarChart3, FileText, ClipboardList, LogOut, ChevronRight } from "lucide-react";
+import { LayoutGrid, Users, BarChart3, FileText, ClipboardList, LogOut, ChevronRight, Menu } from "lucide-react";
 import logoImage from "figma:asset/42fc6b12cdf5889f8e5eaaa8a7a3047a4be7c365.png";
 import { useAuth } from "../context/AuthContext";
 
 export function Layout() {
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
@@ -25,68 +27,100 @@ export function Layout() {
     return location.pathname.startsWith(path);
   };
 
+  const SidebarContent = () => (
+    <>
+      {/* Logo */}
+      <div className="p-6 border-b border-gray-200">
+        <img src={logoImage} alt="KOMISS Logo" className="w-24 h-24 mx-auto" />
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4">
+        <ul className="space-y-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
+                    isActive(item.path)
+                      ? "bg-gray-200 text-gray-900"
+                      : "text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="text-sm">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {/* User Info + Logout */}
+      <div className="p-4 border-t border-gray-200">
+        <Link
+          to="/profile"
+          onClick={() => setSidebarOpen(false)}
+          className="block mb-3 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors group cursor-pointer"
+        >
+          <div className="flex items-center justify-between">
+            <div className="min-w-0">
+              <div className="text-sm text-gray-900 truncate">{user?.name}</div>
+              <div className="text-xs text-gray-500 truncate mt-0.5">{user?.role}</div>
+              <div className="text-xs text-gray-400 truncate">{user?.hospital}</div>
+            </div>
+            <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 flex-shrink-0 ml-1" />
+          </div>
+        </Link>
+        <button
+          onClick={logout}
+          className="flex items-center gap-2 w-full px-4 py-2.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="text-sm">로그아웃</span>
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="w-48 bg-white border-r border-gray-200 flex flex-col">
-        {/* Logo */}
-        <div className="p-6 border-b border-gray-200">
-          <img src={logoImage} alt="KOMISS Logo" className="w-24 h-24 mx-auto" />
-        </div>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
-                      isActive(item.path)
-                        ? "bg-gray-200 text-gray-900"
-                        : "text-gray-600 hover:bg-gray-100"
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="text-sm">{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        {/* User Info + Logout */}
-        <div className="p-4 border-t border-gray-200">
-          <Link
-            to="/profile"
-            className="block mb-3 px-2 py-2 rounded-lg hover:bg-gray-50 transition-colors group cursor-pointer"
-          >
-            <div className="flex items-center justify-between">
-              <div className="min-w-0">
-                <div className="text-sm text-gray-900 truncate">{user?.name}</div>
-                <div className="text-xs text-gray-500 truncate mt-0.5">{user?.role}</div>
-                <div className="text-xs text-gray-400 truncate">{user?.hospital}</div>
-              </div>
-              <ChevronRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 flex-shrink-0 ml-1" />
-            </div>
-          </Link>
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 w-full px-4 py-2.5 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-sm">로그아웃</span>
-          </button>
-        </div>
+      {/* Sidebar — desktop: always visible, mobile: slide-in drawer */}
+      <aside
+        className={`fixed md:static inset-y-0 left-0 z-50 w-48 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-200 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
+      >
+        <SidebarContent />
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Mobile top bar */}
+        <header className="md:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200 flex-shrink-0">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-1.5 rounded-lg text-gray-600 hover:bg-gray-100"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <img src={logoImage} alt="KOMISS Logo" className="w-8 h-8" />
+        </header>
+
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }
