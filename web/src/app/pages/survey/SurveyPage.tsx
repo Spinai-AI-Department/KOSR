@@ -201,7 +201,7 @@ export default function SurveyQuestionsPage() {
           right: 0,
           backgroundColor: '#fff',
           borderTop: '1px solid #e5e7eb',
-          padding: '14px 20px',
+          padding: '14px 20px calc(14px + env(safe-area-inset-bottom, 20px))',
           display: 'flex',
           gap: '12px',
           flexShrink: 0,
