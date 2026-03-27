@@ -50,16 +50,16 @@ export function LoginPage() {
           <img src={logoImage} alt="KOMISS Logo" className="w-12 h-12" />
           <div>
             <div className="text-white text-sm">KOMISS / KSOR</div>
-            <div className="text-gray-400 text-xs">Korean Spine Outcomes Registry</div>
+            <div className="text-gray-400 text-xs">Korean Neurosurgery Outcomes Registry</div>
           </div>
         </div>
 
         <div>
           <h1 className="text-white text-4xl mb-4 leading-tight">
-            척추 수술 성과<br />데이터 레지스트리
+            신경외과 수술 성과<br />데이터 레지스트리
           </h1>
           <p className="text-gray-400 text-base leading-relaxed">
-            국내 최초 척추 내시경 수술 전문 레지스트리 시스템으로<br />
+            국내 최초 신경외과 내시경 수술 전문 레지스트리 시스템으로<br />
             체계적인 수술 성과 추적 및 분석을 지원합니다.
           </p>
 
@@ -90,7 +90,7 @@ export function LoginPage() {
             <img src={logoImage} alt="KOMISS Logo" className="w-10 h-10" />
             <div>
               <div className="text-gray-900 text-sm">KOMISS / KSOR</div>
-              <div className="text-gray-400 text-xs">Korean Spine Outcomes Registry</div>
+              <div className="text-gray-400 text-xs">Korean Neurosurgery Outcomes Registry</div>
             </div>
           </div>
 
