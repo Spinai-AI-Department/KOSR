@@ -19,7 +19,25 @@ export function Dashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setData({
+        stats: { total_surgeries: 248, monthly_surgeries: 12, prom_pending_cases: 5, avg_op_time_min: 92, complications_count: 2 },
+        vas_odi_trend: [
+          { timepoint: '수술전', vas_back: 7.8, vas_leg: 7.2, odi: 64 },
+          { timepoint: '1개월', vas_back: 4.2, vas_leg: 3.5, odi: 38 },
+          { timepoint: '3개월', vas_back: 2.5, vas_leg: 1.8, odi: 22 },
+          { timepoint: '6개월', vas_back: 1.2, vas_leg: 0.8, odi: 12 },
+          { timepoint: '1년', vas_back: 0.8, vas_leg: 0.5, odi: 8 },
+        ],
+        surgery_type_distribution: [
+          { label: 'Full-endo', count: 112, percentage: 45 },
+          { label: 'UBE', count: 74, percentage: 30 },
+          { label: 'Biportal', count: 37, percentage: 15 },
+          { label: 'Open', count: 25, percentage: 10 },
+        ],
+      });
+      return;
+    }
     setLoading(true);
     setError(null);
     dashboardService.getData(token)

@@ -25,6 +25,40 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+const DEMO_ACCOUNTS = [
+  {
+    email: "admin@ksor.kr",
+    password: "Admin1234!",
+    user: {
+      id: "demo-admin",
+      name: "김민준",
+      role: "관리자",
+      hospital: "서울대학교병원",
+      email: "admin@ksor.kr",
+      phone: "010-1234-5678",
+      specialty: "신경외과",
+      department: "신경외과",
+    } as User,
+  },
+  {
+    email: "doctor@ksor.kr",
+    password: "Admin1234!",
+    user: {
+      id: "demo-doctor",
+      name: "이수연",
+      role: "연구책임자",
+      hospital: "세브란스병원",
+      email: "doctor@ksor.kr",
+      phone: "010-9876-5432",
+      specialty: "신경외과",
+      department: "신경외과",
+    } as User,
+  },
+];
+
+export function isDemoUser(user: User | null): boolean {
+  return !!user && user.id.startsWith("demo-");
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
@@ -44,6 +78,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string
   ): Promise<{ success: boolean; error?: string }> => {
+    // Demo accounts — work without backend
+    const demo = DEMO_ACCOUNTS.find(a => a.email === email && a.password === password);
+    if (demo) {
+      setUser(demo.user);
+      setToken(null);
+      localStorage.setItem("ksor_user", JSON.stringify(demo.user));
+      localStorage.removeItem("ksor_token");
+      return { success: true };
+    }
+
+    // Real backend login
     try {
       const res = await authService.login({ login_id: email, password });
       setUser(res.user);
@@ -75,7 +120,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<{ success: boolean; error?: string }> => {
     if (!user) return { success: false, error: "로그인이 필요합니다." };
 
-    // Call API (backend only accepts email and phone)
+    // Demo user — update locally
+    if (isDemoUser(user)) {
+      const updated = { ...user, ...updates };
+      setUser(updated);
+      localStorage.setItem("ksor_user", JSON.stringify(updated));
+      return { success: true };
+    }
     if (!token) return { success: false, error: "인증 토큰이 없습니다." };
     try {
       await authService.updateProfile(
@@ -103,7 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (newPw.length < 6)
       return { success: false, error: "새 비밀번호는 6자 이상이어야 합니다." };
 
-    // Call API
+    // Demo user — accept locally
+    if (isDemoUser(user)) return { success: true };
     if (!token) return { success: false, error: "인증 토큰이 없습니다." };
     try {
       await authService.changePassword(
@@ -121,7 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated: !!user && !!token, login, logout, updateUser, changePassword }}
+      value={{ user, token, isAuthenticated: !!user && (!!token || isDemoUser(user)), login, logout, updateUser, changePassword }}
     >
       {children}
     </AuthContext.Provider>

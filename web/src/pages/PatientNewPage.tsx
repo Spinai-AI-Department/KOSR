@@ -240,7 +240,7 @@ export function SurgeryDataEntry() {
 
   const handleSubmit = async () => {
     if (!token) {
-      setSubmitError('로그인이 필요합니다.');
+      setSubmitError('데모 모드에서는 저장할 수 없습니다.');
       return;
     }
 

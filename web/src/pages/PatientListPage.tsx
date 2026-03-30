@@ -116,7 +116,18 @@ function PatientListTab() {
   };
 
   const fetchPatients = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      const demoPatients: Patient[] = [
+        { id: "KS-2401-001", caseId: "KS-2401-001", name: "K**", age: 45, gender: "M", preOp: "Completed", m1: "Completed", m3: "Pending", m6: "Not Due", yr1: "Not Due" },
+        { id: "KS-2401-002", caseId: "KS-2401-002", name: "L**", age: 52, gender: "F", preOp: "Completed", m1: "Completed", m3: "Completed", m6: "Pending", yr1: "Not Due" },
+        { id: "KS-2401-003", caseId: "KS-2401-003", name: "P**", age: 38, gender: "M", preOp: "Completed", m1: "Completed", m3: "Completed", m6: "Completed", yr1: "Pending" },
+        { id: "KS-2401-004", caseId: "KS-2401-004", name: "C**", age: 61, gender: "F", preOp: "Completed", m1: "Pending", m3: "Not Due", m6: "Not Due", yr1: "Not Due" },
+        { id: "KS-2401-005", caseId: "KS-2401-005", name: "J**", age: 33, gender: "M", preOp: "Completed", m1: "Completed", m3: "Completed", m6: "Completed", yr1: "Completed" },
+      ];
+      setPatients(demoPatients);
+      setTotal(demoPatients.length);
+      return;
+    }
     setListLoading(true);
     try {
       const keyword = [searchId, searchName].filter(Boolean).join(' ').trim() || undefined;
@@ -195,7 +206,15 @@ function PatientListTab() {
   const [recentFU, setRecentFU] = useState<{ id: string; name: string; status: string; date: string }[]>([]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setRecentFU([
+        { id: "KS-2401-001", name: "K** (1개월)", status: "입력 완료", date: "2024-12-15" },
+        { id: "KS-2401-002", name: "L** (6개월)", status: "대기 중", date: "2024-12-14" },
+        { id: "KS-2401-004", name: "C** (Pre-op)", status: "입력 완료", date: "2024-12-13" },
+        { id: "KS-2401-003", name: "P** (1년)", status: "지연", date: "2024-12-10" },
+      ]);
+      return;
+    }
     dashboardService.getRecentFollowups(token).then((data) => {
       const statusMap: Record<string, string> = {
         SUBMITTED: '입력 완료', COMPLETED: '입력 완료',
@@ -216,7 +235,14 @@ function PatientListTab() {
   };
 
   const executeDelete = async () => {
-    if (!deleteConfirm || !token) return;
+    if (!deleteConfirm) return;
+    if (!token) {
+      // Demo mode: remove from local state
+      setPatients(prev => prev.filter(p => p.caseId !== deleteConfirm.caseId));
+      setTotal(prev => Math.max(0, prev - 1));
+      setDeleteConfirm(null);
+      return;
+    }
     try {
       await patientService.delete(deleteConfirm.caseId, token);
       setDeleteConfirm(null);
@@ -242,7 +268,21 @@ function PatientListTab() {
       return;
     }
     setFormErrors({});
-    if (!token) return;
+    if (!token) {
+      // Demo mode: add to local state
+      const demoId = `KS-DEMO-${String(patients.length + 1).padStart(3, '0')}`;
+      const birthYear = new Date(newForm.birth_date).getFullYear();
+      const age = new Date().getFullYear() - birthYear;
+      const newPatient: Patient = {
+        id: demoId, caseId: demoId, name: `${newForm.name.charAt(0)}**`, age, gender: newForm.gender,
+        preOp: "Not Due", m1: "Not Due", m3: "Not Due", m6: "Not Due", yr1: "Not Due",
+      };
+      setPatients(prev => [newPatient, ...prev]);
+      setTotal(prev => prev + 1);
+      setShowNewPatientModal(false);
+      setNewForm({ name: "", birth_date: "", gender: "M" });
+      return;
+    }
     setCreating(true);
     try {
       const today = new Date().toISOString().slice(0, 10);

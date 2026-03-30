@@ -33,7 +33,26 @@ export function Reports() {
   const [error, setError]       = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setData({
+        summary: { total_surgeries: 248, success_rate: 94.2, complication_rate: 2.4, avg_hospital_days: 3.2 },
+        monthly_trend: [
+          { month: '2024-07', surgeries: 18, complications: 1 },
+          { month: '2024-08', surgeries: 22, complications: 0 },
+          { month: '2024-09', surgeries: 20, complications: 1 },
+          { month: '2024-10', surgeries: 25, complications: 0 },
+          { month: '2024-11', surgeries: 19, complications: 1 },
+          { month: '2024-12', surgeries: 12, complications: 0 },
+        ],
+        surgery_outcomes: [
+          { type: 'Full-endo', success: 96, improved: 88 },
+          { type: 'UBE', success: 93, improved: 85 },
+          { type: 'Biportal', success: 91, improved: 82 },
+          { type: 'Open', success: 88, improved: 78 },
+        ],
+      });
+      return;
+    }
     setLoading(true);
     setError(null);
     reportService.getData({ date_from: dateFrom, date_to: dateTo }, token)
@@ -45,7 +64,10 @@ export function Reports() {
   }, [token, dateFrom, dateTo]);
 
   const handleDownloadPdf = async () => {
-    if (!token) return;
+    if (!token) {
+      setError('데모 모드에서는 CSV 다운로드를 사용할 수 없습니다.');
+      return;
+    }
     setDownloading(true);
     try {
       const blob = await reportService.downloadPdf({ date_from: dateFrom, date_to: dateTo }, token);
