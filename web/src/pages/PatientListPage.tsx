@@ -77,8 +77,17 @@ function RecentFUStatusBadge({ status }: { status: string }) {
   );
 }
 
+// ─── 캐시 인터페이스 ─────────────────────────────────────────────────────────
+interface PatientListCache {
+  patients: Patient[];
+  total: number;
+}
+
 // ─── 환자 목록 탭 ───────────────────────────────────────────────────────────
-function PatientListTab() {
+function PatientListTab({ cache, onCacheUpdate }: {
+  cache: PatientListCache | null;
+  onCacheUpdate: (c: PatientListCache) => void;
+}) {
   const { token } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -89,11 +98,12 @@ function PatientListTab() {
   const [showNewPatientModal, setShowNewPatientModal] = useState(false);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
 
-  // Patient list state
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [total, setTotal] = useState(0);
+  // Patient list state — seed from cache if available
+  const [patients, setPatients] = useState<Patient[]>(cache?.patients ?? []);
+  const [total, setTotal] = useState(cache?.total ?? 0);
   const [page, setPage] = useState(1);
   const [listLoading, setListLoading] = useState(false);
+  const hasCacheRef = useState(() => cache !== null)[0]; // true if mounted with cache
   const PAGE_SIZE = 20;
 
   // New patient form state
@@ -163,7 +173,7 @@ function PatientListTab() {
         token
       );
       // Map ApiPatient to local Patient type
-      setPatients(res.items.map((p: ApiPatient) => {
+      const mapped = res.items.map((p: ApiPatient) => {
         // Map prom_alimtalk timepoint statuses to follow-up columns
         const mapTimepointStatus = (timepointCode: string): FollowUpStatus => {
           const prom = p.promAlimtalk as Record<string, unknown>;
@@ -215,26 +225,36 @@ function PatientListTab() {
           yr1: mapTimepointStatus('POST_1Y'),
           followupTimepoints,
         };
-      }));
+      });
+      setPatients(mapped);
       setTotal(res.total);
+      onCacheUpdate({ patients: mapped, total: res.total });
     } catch (err) {
       setListError(err instanceof Error ? err.message : '환자 목록을 불러오는데 실패했습니다.');
     } finally {
       setListLoading(false);
     }
-  }, [token, searchId, searchName, selectedPeriod, page]);
+  }, [token, searchId, searchName, selectedPeriod, page, onCacheUpdate]);
 
-  useEffect(() => { fetchPatients(); }, [fetchPatients]);
+  // Skip initial fetch if mounted with cached data (default filters, page 1)
+  const skipInitialFetch = useCallback(() => {
+    return hasCacheRef && page === 1 && searchId === '' && searchName === '' && selectedPeriod === '전체';
+  }, [hasCacheRef, page, searchId, searchName, selectedPeriod]);
+
+  useEffect(() => {
+    if (skipInitialFetch()) return;
+    fetchPatients();
+  }, [fetchPatients, skipInitialFetch]);
 
   // Show success toast when navigated back from surgery-entry after save
   useEffect(() => {
     if ((location.state as { saved?: boolean } | null)?.saved) {
       setSuccessMsg('저장되었습니다.');
       setTimeout(() => setSuccessMsg(null), 1000);
-      // Clear the state so it doesn't re-trigger on refresh
-      window.history.replaceState({}, '');
+      // Clear the state so it doesn't re-trigger on tab switch / refresh
+      navigate('.', { replace: true, state: {} });
     }
-  }, [location.state]);
+  }, [location.state, navigate]);
 
   const [recentFU, setRecentFU] = useState<{ id: string; name: string; status: string; date: string }[]>([]);
 
@@ -1261,6 +1281,11 @@ function ComplicationTab() {
 // ─── Main Component ─────────────────────────────────────────────────────────
 export function PatientTracking() {
   const [activeTab, setActiveTab] = useState<TabType>("list");
+  const [patientCache, setPatientCache] = useState<PatientListCache | null>(null);
+
+  const handleCacheUpdate = useCallback((c: PatientListCache) => {
+    setPatientCache(c);
+  }, []);
 
   const tabs: { key: TabType; label: string }[] = [
     { key: "list", label: "환자 목록" },
@@ -1293,7 +1318,9 @@ export function PatientTracking() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === "list" ? <PatientListTab /> : <ComplicationTab />}
+      {activeTab === "list"
+        ? <PatientListTab cache={patientCache} onCacheUpdate={handleCacheUpdate} />
+        : <ComplicationTab />}
     </div>
   );
 }
