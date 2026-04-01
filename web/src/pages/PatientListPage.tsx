@@ -435,6 +435,12 @@ function PatientListTab({ cache, onCacheUpdate }: {
 
       {/* Patient Table */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-6 overflow-hidden">
+        {/* Loading Progress Bar */}
+        {listLoading && (
+          <div className="h-1 w-full bg-gray-200 overflow-hidden rounded-t-xl">
+            <div className="h-full w-1/3 bg-gray-900 rounded-full animate-[indeterminate_1.5s_ease-in-out_infinite]" />
+          </div>
+        )}
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1200px]">
             <thead>
