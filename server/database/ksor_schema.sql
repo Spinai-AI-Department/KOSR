@@ -704,6 +704,7 @@ CREATE TABLE IF NOT EXISTS auth.auth_session (
     app_node                   text,
     load_balancer_id           text,
     request_id                 uuid,
+    hospital_code              varchar(20),
     created_at                 timestamptz NOT NULL DEFAULT now(),
     created_by                 uuid,
     updated_at                 timestamptz NOT NULL DEFAULT now(),
