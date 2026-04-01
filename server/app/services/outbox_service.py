@@ -107,7 +107,7 @@ async def lease_next_batch(conn: AsyncConnection, *, node_name: str, batch_size:
     )
 
 
-async def _load_recipient_phone(conn: AsyncConnection, patient_id: str) -> str | None:
+async def _load_recipient_phone(conn: AsyncConnection, patient_id: int) -> str | None:
     row = await fetch_one(conn, "SELECT phone_enc FROM vault.patient_identity WHERE patient_id = %s", (patient_id,))
     if not row:
         return None
@@ -175,7 +175,7 @@ async def _mark_failed(conn: AsyncConnection, row: dict[str, Any], result: Vendo
 
 
 async def process_message(conn: AsyncConnection, row: dict[str, Any]) -> None:
-    phone = await _load_recipient_phone(conn, str(row["patient_id"]))
+    phone = await _load_recipient_phone(conn, row["patient_id"])
     if not phone:
         await _mark_failed(
             conn,

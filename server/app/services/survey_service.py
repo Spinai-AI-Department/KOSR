@@ -125,7 +125,7 @@ async def verify(conn: AsyncConnection, token_uuid: UUID, payload: SurveyVerifyR
     identity = await fetch_one(
         conn,
         "SELECT phone_last4_sha256, birth_ymd_sha256 FROM vault.patient_identity WHERE patient_id = %s",
-        (str(row["patient_id"]),),
+        (row["patient_id"],),
     )
     if not identity:
         raise UnauthorizedError(message="본인 확인 정보를 찾을 수 없습니다.", error_code="SURVEY_VERIFY_NOT_AVAILABLE")
@@ -333,7 +333,7 @@ async def save_draft(conn: AsyncConnection, claims: AccessTokenClaims, question_
             str(claims.request_id),
             request_row["hospital_code"],
             str(request_row["case_id"]),
-            str(request_row["patient_id"]),
+            request_row["patient_id"],
             payload_json,
             payload_json,
         ),
@@ -449,7 +449,7 @@ async def submit(conn: AsyncConnection, claims: AccessTokenClaims, answers: dict
         (
             request_row["hospital_code"],
             str(request_row["case_id"]),
-            str(request_row["patient_id"]),
+            request_row["patient_id"],
             str(request_row["request_id"]),
             request_row["timepoint_code"],
             bundle_json,
@@ -477,7 +477,7 @@ async def submit(conn: AsyncConnection, claims: AccessTokenClaims, answers: dict
                 str(submission_row["submission_id"]),
                 request_row["hospital_code"],
                 str(request_row["case_id"]),
-                str(request_row["patient_id"]),
+                request_row["patient_id"],
                 _detect_instrument(question_code),
                 question_code,
                 step,

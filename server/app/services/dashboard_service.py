@@ -528,7 +528,7 @@ async def get_recent_followups(
         conn,
         """
         SELECT
-            cr.patient_id::text AS patient_id,
+            cr.patient_id,
             cr.case_id::text AS case_id,
             cr.registration_id,
             p.patient_initial,

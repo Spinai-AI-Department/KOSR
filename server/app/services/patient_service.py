@@ -206,7 +206,7 @@ async def list_cases(
 
         items.append(
             PatientListItem(
-                patient_id=str(row["patient_id"]),
+                patient_id=row["patient_id"],
                 case_id=row["case_id"],
                 no=no,
                 registration_id=row["registration_id"],
@@ -297,7 +297,7 @@ async def create_patient_case(conn: AsyncConnection, actor_user_id: UUID, payloa
         )
         """,
         (
-            str(patient_id),
+            patient_id,
             hospital_code,
             crypto.encrypt_text(payload.local_mrn),
             crypto.sha256_hex((payload.local_mrn or "").strip()) if payload.local_mrn else None,
@@ -332,7 +332,7 @@ async def create_patient_case(conn: AsyncConnection, actor_user_id: UUID, payloa
         """,
         (
             hospital_code,
-            str(patient_id),
+            patient_id,
             hospital_code,
             payload.visit_date,
             payload.consent_date,
@@ -353,7 +353,7 @@ async def create_patient_case(conn: AsyncConnection, actor_user_id: UUID, payloa
     _log.info("create_patient_case: case_record created successfully")
 
     return PatientCreateResponse(
-        patient_id=str(patient_id),
+        patient_id=patient_id,
         case_id=case_row["case_id"],
         registration_id=case_row["registration_id"],
     )
@@ -513,12 +513,12 @@ async def update_clinical(conn: AsyncConnection, case_id: UUID, payload: Clinica
     initial_updates: dict[str, Any] = {
         "case_id": str(case_id),
         "hospital_code": case_row["hospital_code"],
-        "patient_id": str(case_row["patient_id"]),
+        "patient_id": case_row["patient_id"],
     }
     extended_updates: dict[str, Any] = {
         "case_id": str(case_id),
         "hospital_code": case_row["hospital_code"],
-        "patient_id": str(case_row["patient_id"]),
+        "patient_id": case_row["patient_id"],
     }
 
     mapping_case = {"diagnosis_code", "procedure_code", "spinal_region", "surgery_date"}
@@ -660,7 +660,7 @@ async def update_outcome(conn: AsyncConnection, case_id: UUID, payload: OutcomeU
     row_payload = {
         "case_id": str(case_id),
         "hospital_code": case_row["hospital_code"],
-        "patient_id": str(case_row["patient_id"]),
+        "patient_id": case_row["patient_id"],
         **db_data,
     }
     insert_cols, insert_placeholders, insert_values = build_insert_clause(row_payload)
@@ -717,7 +717,7 @@ async def put_memo(conn: AsyncConnection, case_id: UUID, actor_user_id: UUID, pa
         (
             case_row["hospital_code"],
             str(case_id),
-            str(case_row["patient_id"]),
+            case_row["patient_id"],
             payload.visibility,
             payload.memo_text,
             str(actor_user_id),
@@ -760,7 +760,7 @@ async def send_prom_request(conn: AsyncConnection, case_id: UUID, actor_user_id:
     identity = await fetch_one(
         conn,
         "SELECT phone_sha256, phone_last4_sha256 FROM vault.patient_identity WHERE patient_id = %s",
-        (str(case_row["patient_id"]),),
+        (case_row["patient_id"],),
     )
     if not identity or not identity["phone_sha256"]:
         raise ValidationError("환자 연락처가 없어 알림톡을 발송할 수 없습니다.", error_code="PATIENT_PHONE_MISSING")
@@ -782,7 +782,7 @@ async def send_prom_request(conn: AsyncConnection, case_id: UUID, actor_user_id:
         (
             case_row["hospital_code"],
             str(case_id),
-            str(case_row["patient_id"]),
+            case_row["patient_id"],
             payload.timepoint_code,
             str(actor_user_id),
             datetime.now(tz=timezone.utc) + timedelta(days=payload.expires_in_days or settings.default_prom_request_expire_days),
@@ -812,7 +812,7 @@ async def send_prom_request(conn: AsyncConnection, case_id: UUID, actor_user_id:
         (
             case_row["hospital_code"],
             str(case_id),
-            str(case_row["patient_id"]),
+            case_row["patient_id"],
             str(request_row["request_id"]),
             settings.alimtalk_template_fallback_vendor_code,
             f"prom:{case_id}:{payload.timepoint_code}",
