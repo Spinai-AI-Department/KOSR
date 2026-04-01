@@ -126,7 +126,7 @@ erDiagram
     }
 
     clinical_case_initial_form {
-        uuid case_id PK_FK
+        uuid case_id PK
         varchar hospital_code FK
         varchar patient_id FK
         jsonb comorbidities
@@ -136,7 +136,7 @@ erDiagram
     }
 
     clinical_case_extended_form {
-        uuid case_id PK_FK
+        uuid case_id PK
         varchar hospital_code FK
         varchar patient_id FK
         varchar surgery_level
@@ -150,7 +150,7 @@ erDiagram
     }
 
     clinical_case_outcome_form {
-        uuid case_id PK_FK
+        uuid case_id PK
         varchar hospital_code FK
         varchar patient_id FK
         boolean complication_yn
@@ -204,7 +204,7 @@ erDiagram
     }
 
     survey_prom_draft {
-        uuid request_id PK_FK
+        uuid request_id PK
         uuid case_id FK
         varchar hospital_code FK
         varchar patient_id FK
