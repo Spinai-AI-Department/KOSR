@@ -906,15 +906,15 @@ BEGIN
     END IF;
 
     IF p_success AND NOT v_user.is_locked THEN
-        UPDATE auth.user_account
+        UPDATE auth.user_account ua2
            SET failed_login_count = 0,
                last_login_at = now(),
                last_active_at = now(),
                updated_at = now()
-         WHERE user_id = v_user.user_id
-     RETURNING auth.user_account.user_id,
-               auth.user_account.failed_login_count,
-               auth.user_account.is_locked
+         WHERE ua2.user_id = v_user.user_id
+     RETURNING ua2.user_id,
+               ua2.failed_login_count,
+               ua2.is_locked
           INTO user_id, failed_login_count, is_locked;
 
         v_event_type := 'LOGIN_SUCCESS';
@@ -924,7 +924,7 @@ BEGIN
             ELSE COALESCE(v_user.failed_login_count, 0) + 1
         END;
 
-        UPDATE auth.user_account
+        UPDATE auth.user_account ua2
            SET failed_login_count = v_new_fail,
                is_locked = CASE WHEN v_user.is_locked THEN true WHEN v_new_fail >= 5 THEN true ELSE false END,
                locked_at = CASE WHEN v_user.is_locked THEN v_user.locked_at WHEN v_new_fail >= 5 THEN now() ELSE NULL END,
@@ -932,10 +932,10 @@ BEGIN
                                     WHEN v_new_fail >= 5 THEN COALESCE(p_failure_reason, 'LOGIN_FAILED_5_TIMES')
                                     ELSE NULL END,
                updated_at = now()
-         WHERE user_id = v_user.user_id
-     RETURNING auth.user_account.user_id,
-               auth.user_account.failed_login_count,
-               auth.user_account.is_locked
+         WHERE ua2.user_id = v_user.user_id
+     RETURNING ua2.user_id,
+               ua2.failed_login_count,
+               ua2.is_locked
           INTO user_id, failed_login_count, is_locked;
 
         v_event_type := CASE WHEN is_locked THEN 'ACCOUNT_LOCKED' ELSE 'LOGIN_FAILURE' END;
