@@ -143,7 +143,7 @@ export function LoginPage() {
             {error && (
               <div className="flex items-center gap-2 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg">
                 <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                <span className="text-sm text-red-600">{error}</span>
+                <span className="text-sm text-red-600 whitespace-pre-line">{error}</span>
               </div>
             )}
 

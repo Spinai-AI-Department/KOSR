@@ -92,7 +92,7 @@ async def login(conn: AsyncConnection, payload: LoginRequest) -> LoginResponseDa
         raise UnauthorizedError(message="회원가입 승인 대기 중입니다.", error_code="AUTH_PENDING_APPROVAL")
     if approval == "REJECTED":
         reason = snapshot["rejection_reason"]
-        message = f"회원가입이 거절되었습니다. 사유: {reason}" if reason else "회원가입이 거절되었습니다."
+        message = f"회원가입이 거절되었습니다.\n사유: {reason}" if reason else "회원가입이 거절되었습니다."
         raise UnauthorizedError(message=message, error_code="AUTH_SIGNUP_REJECTED")
 
     if not snapshot["is_active"]:
