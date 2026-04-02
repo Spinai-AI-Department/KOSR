@@ -20,7 +20,7 @@ async def list_users(
     hospital_code: str | None = None,
     keyword: str | None = None,
 ) -> AdminUserListResponse:
-    where: list[str] = []
+    where: list[str] = ["approval_status = 'APPROVED'"]
     params: list[Any] = []
     if hospital_code:
         where.append("hospital_code = %s")

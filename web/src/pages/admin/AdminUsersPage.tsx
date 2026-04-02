@@ -15,15 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
-function statusBadge(status: string, isActive: boolean) {
-  if (status === "PENDING") return <Badge variant="outline" className="text-yellow-600 border-yellow-400">승인 대기</Badge>;
-  if (status === "REJECTED") return <Badge variant="outline" className="text-red-600 border-red-400">거절됨</Badge>;
-  if (status === "APPROVED") {
-    return isActive
-      ? <Badge variant="outline" className="text-green-600 border-green-400">활성</Badge>
-      : <Badge variant="outline" className="text-gray-500 border-gray-300">정지</Badge>;
-  }
-  return <Badge variant="outline">{status}</Badge>;
+function statusBadge(isActive: boolean) {
+  return isActive
+    ? <Badge variant="outline" className="text-green-600 border-green-400">활성</Badge>
+    : <Badge variant="outline" className="text-gray-500 border-gray-300">정지</Badge>;
 }
 
 function actionBadge(action: string) {
@@ -312,7 +307,7 @@ export function AdminUsersPage() {
                       <td className="px-4 py-3 text-gray-600">{user.login_id}</td>
                       <td className="px-4 py-3">{roleLabel(user.role_code)}</td>
                       <td className="px-4 py-3 text-gray-600">{user.hospital_code ?? "—"}</td>
-                      <td className="px-4 py-3">{statusBadge(user.approval_status, user.is_active)}</td>
+                      <td className="px-4 py-3">{statusBadge(user.is_active)}</td>
                       <td className="px-4 py-3 text-gray-500">
                         {new Date(user.created_at).toLocaleDateString("ko-KR")}
                       </td>
