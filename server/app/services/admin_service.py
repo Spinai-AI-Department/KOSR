@@ -333,7 +333,7 @@ async def list_approval_logs(
                 a.full_name AS actor_name,
                 u.rejection_reason
             FROM auth.user_account u
-            LEFT JOIN auth.user_account a ON a.user_id::text = u.approved_by
+            LEFT JOIN auth.user_account a ON a.user_id = u.approved_by
             WHERE u.approval_status IN ('APPROVED', 'REJECTED')
               AND u.approved_at IS NOT NULL
         ) events
