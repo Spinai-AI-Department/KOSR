@@ -660,7 +660,6 @@ CREATE TABLE IF NOT EXISTS auth.user_account (
     department                 varchar(100),
     specialty                  varchar(100),
     license_number             varchar(50),
-    deleted_at                 timestamptz,
     created_at                 timestamptz NOT NULL DEFAULT now(),
     created_by                 uuid,
     updated_at                 timestamptz NOT NULL DEFAULT now(),
@@ -701,7 +700,7 @@ CREATE INDEX IF NOT EXISTS idx_user_account_active
 
 CREATE INDEX IF NOT EXISTS idx_user_account_approval_pending
     ON auth.user_account (approval_status, created_at DESC)
-    WHERE approval_status = 'PENDING' AND deleted_at IS NULL;
+    WHERE approval_status = 'PENDING';
 
 CREATE TABLE IF NOT EXISTS auth.user_password_history (
     password_history_id        uuid PRIMARY KEY DEFAULT app_private.gen_uuid_pk(),
@@ -818,9 +817,9 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = '42501', MESSAGE = '본인 계정만 수정할 수 있습니다.';
     END IF;
 
-    IF (NEW.role_code, NEW.hospital_code, NEW.login_id, NEW.is_active, NEW.is_locked, NEW.deleted_at, NEW.approval_status)
+    IF (NEW.role_code, NEW.hospital_code, NEW.login_id, NEW.is_active, NEW.is_locked, NEW.approval_status)
        IS DISTINCT FROM
-       (OLD.role_code, OLD.hospital_code, OLD.login_id, OLD.is_active, OLD.is_locked, OLD.deleted_at, OLD.approval_status) THEN
+       (OLD.role_code, OLD.hospital_code, OLD.login_id, OLD.is_active, OLD.is_locked, OLD.approval_status) THEN
         RAISE EXCEPTION USING ERRCODE = '42501', MESSAGE = '권한/소속/잠금/삭제/승인 상태는 관리자만 변경할 수 있습니다.';
     END IF;
 
@@ -865,7 +864,6 @@ AS $$
            ua.approval_status
       FROM auth.user_account ua
      WHERE lower(ua.login_id) = lower(p_login_id)
-       AND ua.deleted_at IS NULL
      LIMIT 1;
 $$;
 
@@ -897,7 +895,6 @@ BEGIN
       INTO v_user
       FROM auth.user_account
      WHERE lower(login_id) = lower(p_login_id)
-       AND deleted_at IS NULL
      FOR UPDATE;
 
     IF NOT FOUND THEN

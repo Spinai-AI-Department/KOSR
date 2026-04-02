@@ -122,7 +122,6 @@ async def update_user(conn: AsyncConnection, user_id, payload: AdminUserUpdateRe
         UPDATE auth.user_account
            SET {set_sql}, updated_at = now()
          WHERE user_id = %s
-           AND deleted_at IS NULL
      RETURNING user_id, login_id, full_name, hospital_code, role_code::text AS role_code,
                email, phone, is_active, is_locked, is_first_login, created_at, last_login_at
         """,
@@ -150,7 +149,6 @@ async def reset_user_password(conn: AsyncConnection, user_id, initial_password: 
                locked_reason = NULL,
                updated_at = now()
          WHERE user_id = %s
-           AND deleted_at IS NULL
      RETURNING user_id, login_id, full_name
         """,
         (password_hash, str(user_id)),
@@ -170,7 +168,7 @@ async def list_pending_users(
     total = int(
         await fetch_val(
             conn,
-            "SELECT count(*) FROM auth.user_account WHERE approval_status = 'PENDING' AND deleted_at IS NULL",
+            "SELECT count(*) FROM auth.user_account WHERE approval_status = 'PENDING'",
             [],
             default=0,
         )
@@ -183,7 +181,7 @@ async def list_pending_users(
                email, phone, is_active, is_locked, is_first_login,
                approval_status::text AS approval_status, created_at, last_login_at
         FROM auth.user_account
-        WHERE approval_status = 'PENDING' AND deleted_at IS NULL
+        WHERE approval_status = 'PENDING'
         ORDER BY created_at ASC
         LIMIT %s OFFSET %s
         """,
@@ -213,7 +211,6 @@ async def approve_user(conn: AsyncConnection, user_id, approver_id) -> dict[str,
                approved_at = now(),
                updated_at = now()
          WHERE user_id = %s
-           AND deleted_at IS NULL
      RETURNING user_id, login_id, full_name, approval_status::text AS approval_status
         """,
         (str(approver_id), str(user_id)),
@@ -235,7 +232,6 @@ async def reject_user(conn: AsyncConnection, user_id, approver_id, *, reason: st
                rejection_reason = %s,
                updated_at = now()
          WHERE user_id = %s
-           AND deleted_at IS NULL
      RETURNING user_id, login_id, full_name, approval_status::text AS approval_status
         """,
         (str(approver_id), reason, str(user_id)),
@@ -251,10 +247,8 @@ async def deactivate_user(conn: AsyncConnection, user_id) -> None:
         """
         UPDATE auth.user_account
            SET is_active = false,
-               deleted_at = now(),
                updated_at = now()
          WHERE user_id = %s
-           AND deleted_at IS NULL
         """,
         (str(user_id),),
     )

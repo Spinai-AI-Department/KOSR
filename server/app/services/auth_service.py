@@ -392,7 +392,6 @@ async def request_password_reset(conn: AsyncConnection, *, login_id: str, email:
         SELECT user_id, login_id, full_name, email
         FROM auth.user_account
         WHERE lower(login_id) = lower(%s)
-          AND deleted_at IS NULL
           AND (%s IS NULL OR lower(email) = lower(%s))
         """,
         (login_id, email, email),
@@ -452,7 +451,7 @@ async def signup(conn: AsyncConnection, payload: SignupRequest) -> None:
 
     existing_login = await fetch_val(
         conn,
-        "SELECT 1 FROM auth.user_account WHERE lower(login_id) = lower(%s) AND deleted_at IS NULL",
+        "SELECT 1 FROM auth.user_account WHERE lower(login_id) = lower(%s)",
         (payload.login_id,),
     )
     if existing_login:
@@ -461,7 +460,7 @@ async def signup(conn: AsyncConnection, payload: SignupRequest) -> None:
     if payload.email:
         existing_email = await fetch_val(
             conn,
-            "SELECT 1 FROM auth.user_account WHERE lower(email) = lower(%s) AND deleted_at IS NULL",
+            "SELECT 1 FROM auth.user_account WHERE lower(email) = lower(%s)",
             (payload.email,),
         )
         if existing_email:
