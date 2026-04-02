@@ -50,17 +50,40 @@ erDiagram
     }
 
     %% ─── Auth ─────────────────────────────────────────────────
+    auth_role_catalog {
+        enum role_code PK
+        varchar role_name_ko
+        text role_description
+        boolean is_system_role
+    }
+
     auth_user_account {
         uuid user_id PK
         varchar hospital_code FK
         varchar login_id UK
         text password_hash
+        varchar password_algo
         varchar full_name
         varchar email
-        enum role_code
+        varchar phone
+        enum role_code FK
+        boolean is_first_login
+        boolean password_reset_required
         boolean is_active
         boolean is_locked
         integer failed_login_count
+        timestamptz last_login_at
+        timestamptz locked_at
+        text locked_reason
+        varchar department
+        varchar specialty
+        varchar license_number
+        enum approval_status
+        uuid approved_by FK
+        timestamptz approved_at
+        text rejection_reason
+        timestamptz created_at
+        timestamptz updated_at
     }
 
     auth_session {
@@ -263,6 +286,12 @@ erDiagram
     ref_hospital ||--o{ patient_patient : "registers"
     ref_hospital ||--o{ clinical_case_record : "owns"
 
+    %% Auth role catalog
+    auth_role_catalog ||--o{ auth_user_account : "assigned to"
+
+    %% User account self-reference (approver)
+    auth_user_account ||--o{ auth_user_account : "approves (approved_by)"
+
     %% Patient core
     patient_patient ||--|| vault_patient_identity : "identity (encrypted)"
     patient_patient ||--o{ clinical_case_record : "has cases"
@@ -305,3 +334,20 @@ erDiagram
     %% Export
     auth_user_account ||--o{ ops_data_export_request : "requests export"
 ```
+
+## Enums
+
+| Enum | Values |
+|------|--------|
+| `auth.app_role` | `ADMIN`, `STEERING`, `PI`, `CRC`, `AUDITOR`, `SYSTEM` |
+| `auth.signup_status` | `PENDING`, `APPROVED`, `REJECTED` |
+| `auth.reset_channel` | `EMAIL`, `ALIMTALK`, `ADMIN` |
+| `auth.auth_event_type` | `LOGIN_SUCCESS`, `LOGIN_FAILURE`, `ACCOUNT_LOCKED`, `LOGOUT`, `TOKEN_REFRESH`, `PASSWORD_RESET_*` |
+| `clinical.case_status` | `DRAFT`, `ACTIVE`, `LOCKED`, `CLOSED`, `ARCHIVED` |
+| `clinical.spinal_region` | `CERVICAL`, `THORACIC`, `LUMBAR`, `SACRAL`, `MULTI`, `UNKNOWN` |
+| `clinical.memo_visibility` | `PRIVATE`, `HOSPITAL`, `ADMIN` |
+| `survey.token_status` | `READY`, `SENT`, `OPENED`, `VERIFIED`, `SUBMITTED`, `EXPIRED`, `FAILED`, `REVOKED` |
+| `messaging.message_channel` | `KAKAO_ALIMTALK`, `EMAIL`, `SMS` |
+| `messaging.message_status` | `QUEUED`, `LEASED`, `SENT`, `DELIVERED`, `OPENED`, `FAILED`, `CANCELLED`, `EXPIRED` |
+| `ops.export_scope` | `SITE`, `GLOBAL` |
+| `ops.approval_status` | `REQUESTED`, `APPROVED`, `REJECTED`, `EXPIRED`, `DOWNLOADED`, `CANCELLED` |
