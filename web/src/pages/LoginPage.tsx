@@ -41,14 +41,14 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-gray-900 dark:bg-gray-950 flex-col justify-between p-12">
         <div className="flex items-center gap-3">
           <img src={logoImage} alt="KOMISS Logo" className="w-12 h-12" />
           <div>
             <div className="text-white text-sm">KOMISS / KSOR</div>
-            <div className="text-gray-400 text-xs">Korean Neurosurgery Outcomes Registry</div>
+            <div className="text-gray-400 dark:text-gray-500 text-xs">Korean Neurosurgery Outcomes Registry</div>
           </div>
         </div>
 
@@ -56,7 +56,7 @@ export function LoginPage() {
           <h1 className="text-white text-4xl mb-4 leading-tight">
             신경외과 수술 성과<br />데이터 레지스트리
           </h1>
-          <p className="text-gray-400 text-base leading-relaxed">
+          <p className="text-gray-400 dark:text-gray-500 text-base leading-relaxed">
             국내 최초 신경외과 내시경 수술 전문 레지스트리 시스템으로<br />
             체계적인 수술 성과 추적 및 분석을 지원합니다.
           </p>
@@ -69,7 +69,7 @@ export function LoginPage() {
             ].map((stat) => (
               <div key={stat.label}>
                 <div className="text-white text-2xl">{stat.value}</div>
-                <div className="text-gray-400 text-sm mt-1">{stat.label}</div>
+                <div className="text-gray-400 dark:text-gray-500 text-sm mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -87,29 +87,29 @@ export function LoginPage() {
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <img src={logoImage} alt="KOMISS Logo" className="w-10 h-10" />
             <div>
-              <div className="text-gray-900 text-sm">KOMISS / KSOR</div>
-              <div className="text-gray-400 text-xs">Korean Neurosurgery Outcomes Registry</div>
+              <div className="text-gray-900 dark:text-gray-100 text-sm">KOMISS / KSOR</div>
+              <div className="text-gray-400 dark:text-gray-500 text-xs">Korean Neurosurgery Outcomes Registry</div>
             </div>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl text-gray-900 mb-1">로그인</h2>
-            <p className="text-gray-500 text-sm">KSOR 대시보드에 접속하려면 로그인하세요.</p>
+            <h2 className="text-2xl text-gray-900 dark:text-gray-100 mb-1">로그인</h2>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">KSOR 대시보드에 접속하려면 로그인하세요.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
             <div>
-              <label className="block text-sm text-gray-700 mb-1.5">이메일</label>
+              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1.5">이메일</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   data-field="이메일"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setFieldErrors((prev) => { const { '이메일': _, ...rest } = prev; return rest; }); }}
                   placeholder="example@ksor.kr"
-                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent ${fieldErrors['이메일'] ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-transparent dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 ${fieldErrors['이메일'] ? 'border-red-500 ring-1 ring-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                 />
               </div>
               {fieldErrors['이메일'] && <p className="text-xs text-red-500 mt-1">{fieldErrors['이메일']}</p>}
@@ -117,21 +117,21 @@ export function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-sm text-gray-700 mb-1.5">비밀번호</label>
+              <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1.5">비밀번호</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type={showPassword ? "text" : "password"}
                   data-field="비밀번호"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setFieldErrors((prev) => { const { '비밀번호': _, ...rest } = prev; return rest; }); }}
                   placeholder="비밀번호를 입력하세요"
-                  className={`w-full pl-10 pr-10 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent ${fieldErrors['비밀번호'] ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
+                  className={`w-full pl-10 pr-10 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-400 focus:border-transparent dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500 ${fieldErrors['비밀번호'] ? 'border-red-500 ring-1 ring-red-500 dark:border-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -141,9 +141,9 @@ export function LoginPage() {
 
             {/* Error */}
             {error && (
-              <div className="flex items-center gap-2 px-3 py-2.5 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 px-3 py-2.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
                 <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                <span className="text-sm text-red-600 whitespace-pre-line">{error}</span>
+                <span className="text-sm text-red-600 dark:text-red-400 whitespace-pre-line">{error}</span>
               </div>
             )}
 
@@ -168,26 +168,26 @@ export function LoginPage() {
           </form>
 
           {/* Signup Link */}
-          <p className="mt-4 text-center text-sm text-gray-500">
+          <p className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
             계정이 없으신가요?{" "}
-            <Link to="/signup" className="text-gray-900 underline">회원가입</Link>
+            <Link to="/signup" className="text-gray-900 dark:text-gray-100 underline">회원가입</Link>
           </p>
 
           {/* Demo Account */}
-          <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
-            <p className="text-xs text-gray-500 mb-3">데모 계정으로 빠르게 접속하기</p>
+          <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">데모 계정으로 빠르게 접속하기</p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => { setEmail("superadmin"); setPassword("Admin1234!"); setError(""); setFieldErrors({}); }}
-                className="flex-1 py-2 border border-gray-300 rounded-lg text-xs text-gray-700 hover:bg-white transition-colors"
+                className="flex-1 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition-colors"
               >
                 관리자 (ADMIN)
               </button>
               <button
                 type="button"
                 onClick={() => { setEmail("doctor@ksor.kr"); setPassword("Doctor123!"); setError(""); setFieldErrors({}); }}
-                className="flex-1 py-2 border border-gray-300 rounded-lg text-xs text-gray-700 hover:bg-white transition-colors"
+                className="flex-1 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition-colors"
               >
                 연구책임자 (PI)
               </button>

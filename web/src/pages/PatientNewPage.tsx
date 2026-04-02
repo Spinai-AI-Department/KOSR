@@ -75,24 +75,24 @@ function FieldLabel({
 }) {
   return (
     <div className="relative group min-h-[2.75rem] mb-1.5 flex flex-col justify-end">
-      <span className="text-sm text-gray-700 cursor-default leading-relaxed">
+      <span className="text-sm text-gray-700 dark:text-gray-300 cursor-default leading-relaxed">
         {label}
         {ksor === "Core" && (
-          <span className="text-[10px] font-medium text-blue-500 border border-blue-200 bg-blue-50 rounded px-1 py-0.5 leading-none ml-1.5 inline-block align-middle">Core</span>
+          <span className="text-[10px] font-medium text-blue-500 border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 rounded px-1 py-0.5 leading-none ml-1.5 inline-block align-middle">Core</span>
         )}
         {ksor === "Optional" && (
-          <span className="text-[10px] font-medium text-gray-400 border border-gray-200 bg-gray-50 rounded px-1 py-0.5 leading-none ml-1.5 inline-block align-middle">Optional</span>
+          <span className="text-[10px] font-medium text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded px-1 py-0.5 leading-none ml-1.5 inline-block align-middle">Optional</span>
         )}
         {badge && (
           <span className="text-xs font-medium text-orange-500 ml-1.5">{badge}</span>
         )}
         {note && (
-          <svg className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 transition-colors ml-1 inline-block align-middle" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors ml-1 inline-block align-middle" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         )}
       </span>
-      {sub && <span className="block text-xs text-gray-400 mt-0.5">{sub}</span>}
+      {sub && <span className="block text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub}</span>}
 
       {note && (
         <div className="absolute bottom-full left-0 mb-2 w-64 bg-gray-900 text-white text-xs rounded-lg px-3 py-2.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30 shadow-xl leading-relaxed">
@@ -107,10 +107,10 @@ function FieldLabel({
 
 // ── Shared primitives ─────────────────────────────────────────────────────────
 const inputCls =
-  "w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+  "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500";
 const inputClsDisabled =
-  "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed";
-const sectionCls = "bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-5";
+  "w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500 cursor-not-allowed";
+const sectionCls = "bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 mb-5";
 
 function RadioGroup({
   value,
@@ -122,9 +122,9 @@ function RadioGroup({
   return (
     <div className="flex gap-4 mt-1">
       {(["yes", "no"] as const).map((v) => (
-        <label key={v} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
+        <label key={v} className="flex items-center gap-2 cursor-pointer text-sm text-gray-700 dark:text-gray-300">
           <div
-            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${value === v ? "border-blue-600" : "border-gray-300"}`}
+            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${value === v ? "border-blue-600" : "border-gray-300 dark:border-gray-600"}`}
             onClick={() => onChange(v)}
           >
             {value === v && <div className="w-2 h-2 rounded-full bg-blue-600" />}
@@ -155,18 +155,18 @@ function Dropdown({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
-        <span className={value ? "text-gray-900" : "text-gray-400"}>{value || placeholder}</span>
-        {open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+        <span className={value ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>{value || placeholder}</span>
+        {open ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
       </button>
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 overflow-hidden">
           {options.map((opt) => (
             <button
               key={opt}
               onClick={() => { setValue(opt); setOpen(false); }}
-              className={`w-full text-left px-4 py-3 text-sm hover:bg-blue-50 transition-colors ${value === opt ? "bg-blue-50 text-blue-700" : "text-gray-700"}`}
+              className={`w-full text-left px-4 py-3 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${value === opt ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700" : "text-gray-700 dark:text-gray-300"}`}
             >
               {opt}
             </button>
@@ -477,25 +477,25 @@ export function SurgeryDataEntry() {
   };
 
   return (
-    <div className={`p-4 md:p-8 min-h-screen bg-gray-50 ${isViewMode ? 'pointer-events-none opacity-90' : ''}`} style={isViewMode ? { pointerEvents: 'auto' } : undefined}>
+    <div className={`p-4 md:p-8 min-h-screen bg-gray-50 dark:bg-gray-950 ${isViewMode ? 'pointer-events-none opacity-90' : ''}`} style={isViewMode ? { pointerEvents: 'auto' } : undefined}>
       {/* Header */}
       <div className="mb-6 md:mb-8">
-        <h1 className="text-xl md:text-2xl text-gray-900">
+        <h1 className="text-xl md:text-2xl text-gray-900 dark:text-gray-100">
           {isViewMode ? 'KSOR 수술 정보 조회' : isFollowupMode ? 'KSOR F/U 입력' : 'KSOR 수술 정보 입력'}
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
           {isViewMode ? 'Korean Spine Outcomes Registry — View Only' : isFollowupMode ? 'Korean Spine Outcomes Registry — Follow-up Entry' : 'Korean Spine Outcomes Registry — Surgery Data Entry'}
         </p>
         {isViewMode && (
-          <div className="mt-2 inline-block px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">읽기 전용</div>
+          <div className="mt-2 inline-block px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-xs font-medium">읽기 전용</div>
         )}
         {isFollowupMode && (
-          <div className="mt-2 inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">팔로업 입력 모드</div>
+          <div className="mt-2 inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 rounded-full text-xs font-medium">팔로업 입력 모드</div>
         )}
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex items-center justify-center py-20">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center py-20">
           <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
         </div>
       ) : (
@@ -503,12 +503,12 @@ export function SurgeryDataEntry() {
       {/* ── Demographics ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Demographics</p>
-        <h2 className="text-base text-gray-900 mb-5">환자 기본 정보</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">환자 기본 정보</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
           <div>
             <FieldLabel label={searchParams.get('patient') ? "환자 번호 (자동입력)" : "환자 번호"} />
             {searchParams.get('patient') ? (
-              <input type="text" value={patientId} readOnly className={`${inputCls} bg-gray-50 text-gray-500 cursor-not-allowed`} />
+              <input type="text" value={patientId} readOnly className={`${inputCls} bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
             ) : (
               <>
                 <input type="text" data-field="patientId" value={patientId} onChange={(e) => { setPatientId(e.target.value); setFieldErrors((prev) => { const { patientId: _, ...rest } = prev; return rest; }); }} placeholder="예: 201933070" className={`${inputCls} ${fieldErrors['patientId'] ? 'border-red-500 ring-1 ring-red-500' : ''}`} />
@@ -532,7 +532,7 @@ export function SurgeryDataEntry() {
               ksor="Core"
               note="Morbidity classification; SweSpine validation recommended improvement"
             />
-            <select value={asaClass} onChange={(e) => setAsaClass(e.target.value)} className={`${inputCls} bg-white`}>
+            <select value={asaClass} onChange={(e) => setAsaClass(e.target.value)} className={`${inputCls} bg-white dark:bg-gray-800`}>
               <option value="">선택</option>
               {["I", "II", "III", "IV", "V"].map((c) => (
                 <option key={c} value={c}>ASA {c}</option>
@@ -545,7 +545,7 @@ export function SurgeryDataEntry() {
       {/* ── Comorbidities ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Comorbidities</p>
-        <h2 className="text-base text-gray-900 mb-5">동반 질환</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">동반 질환</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-5 items-start">
           <div>
             <FieldLabel label="당뇨병" sub="Diabetes" ksor="Core" note="Most commonly collected comorbidity across registries" />
@@ -578,7 +578,7 @@ export function SurgeryDataEntry() {
       {/* ── Diagnosis ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Diagnosis</p>
-        <h2 className="text-base text-gray-900 mb-5">진단</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">진단</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
           <div>
             <FieldLabel label="진단명 (Primary Diagnosis)" ksor="Core" note="HNP, Stenosis, Spondylolisthesis, DDD, etc." />
@@ -605,7 +605,7 @@ export function SurgeryDataEntry() {
       {/* ── Surgery ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Surgery</p>
-        <h2 className="text-base text-gray-900 mb-5">수술 정보</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">수술 정보</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-start mb-6">
           <div>
             <FieldLabel label="수술 방법 (Procedure Type)" ksor="Core" note="Decompression, fusion, disc replacement, etc." />
@@ -645,7 +645,7 @@ export function SurgeryDataEntry() {
           </div>
           <div>
             <FieldLabel label="집도의 경험 수준" sub="Surgeon Experience Level" ksor="Optional" note="Consider for learning curve analysis" />
-            <select value={surgeonExp} onChange={(e) => setSurgeonExp(e.target.value)} className={`${inputCls} bg-white`}>
+            <select value={surgeonExp} onChange={(e) => setSurgeonExp(e.target.value)} className={`${inputCls} bg-white dark:bg-gray-800`}>
               <option value="">선택</option>
               <option value="fellow">전임의 (Fellow)</option>
               <option value="junior">초급 전문의 (&lt;5년)</option>
@@ -658,14 +658,14 @@ export function SurgeryDataEntry() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 border-t border-gray-100 items-start">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 border-t border-gray-100 dark:border-gray-800 items-start">
           <div>
             <FieldLabel label="임플란트 사용 (Implant Used)" ksor="Core" note="Spine Tango has detailed implant catalogue" />
             <div className="space-y-2.5 mt-1">
               {(["cage", "screws", "none"] as const).map((key) => (
                 <label key={key} className="flex items-center gap-3 cursor-pointer">
                   <div
-                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${implants[key] ? "border-blue-600 bg-blue-600" : "border-gray-300 hover:border-gray-400"}`}
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${implants[key] ? "border-blue-600 bg-blue-600" : "border-gray-300 dark:border-gray-600 hover:border-gray-400"}`}
                     onClick={() => toggleImplant(key)}
                   >
                     {implants[key] && (
@@ -674,7 +674,7 @@ export function SurgeryDataEntry() {
                       </svg>
                     )}
                   </div>
-                  <span className="text-sm text-gray-700" onClick={() => toggleImplant(key)}>
+                  <span className="text-sm text-gray-700 dark:text-gray-300" onClick={() => toggleImplant(key)}>
                     {key === "cage" ? "Cage" : key === "screws" ? "Screws" : "없음 (None)"}
                   </span>
                 </label>
@@ -698,7 +698,7 @@ export function SurgeryDataEntry() {
       {/* ── KSOR Endoscopic ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">KSOR Endoscopic</p>
-        <h2 className="text-base text-gray-900 mb-5">내시경 세부 정보</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">내시경 세부 정보</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
           {/* 접근법 */}
           <div>
@@ -717,7 +717,7 @@ export function SurgeryDataEntry() {
                   className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
                     selectedApproach === approach
                       ? "bg-blue-600 text-white border-blue-600"
-                      : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                      : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400"
                   }`}
                 >
                   {approach}
@@ -735,7 +735,7 @@ export function SurgeryDataEntry() {
               badge="KSOR UNIQUE"
               note="KSOR UNIQUE: Interlaminar/Transforaminal, Uni/Bilateral"
             />
-            <p className="text-xs text-gray-400 mt-1 mb-2">접근 방향</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 mb-2">접근 방향</p>
             <div className="space-y-2 mb-4">
               {[
                 { value: "interlaminar", label: "추궁간 (Interlaminar)" },
@@ -743,16 +743,16 @@ export function SurgeryDataEntry() {
               ].map((opt) => (
                 <label key={opt.value} className="flex items-center gap-3 cursor-pointer group">
                   <div
-                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selectedTechnique === opt.value ? "border-blue-600" : "border-gray-300 group-hover:border-gray-400"}`}
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selectedTechnique === opt.value ? "border-blue-600" : "border-gray-300 dark:border-gray-600 group-hover:border-gray-400"}`}
                     onClick={() => setSelectedTechnique(opt.value)}
                   >
                     {selectedTechnique === opt.value && <div className="w-2 h-2 rounded-full bg-blue-600" />}
                   </div>
-                  <span className="text-sm text-gray-700" onClick={() => setSelectedTechnique(opt.value)}>{opt.label}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300" onClick={() => setSelectedTechnique(opt.value)}>{opt.label}</span>
                 </label>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mb-2">편측/양측</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">편측/양측</p>
             <div className="space-y-2">
               {[
                 { value: "unilateral", label: "편측 (Unilateral)" },
@@ -760,12 +760,12 @@ export function SurgeryDataEntry() {
               ].map((opt) => (
                 <label key={opt.value} className="flex items-center gap-3 cursor-pointer group">
                   <div
-                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selectedLaterality === opt.value ? "border-blue-600" : "border-gray-300 group-hover:border-gray-400"}`}
+                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors ${selectedLaterality === opt.value ? "border-blue-600" : "border-gray-300 dark:border-gray-600 group-hover:border-gray-400"}`}
                     onClick={() => setSelectedLaterality(opt.value)}
                   >
                     {selectedLaterality === opt.value && <div className="w-2 h-2 rounded-full bg-blue-600" />}
                   </div>
-                  <span className="text-sm text-gray-700" onClick={() => setSelectedLaterality(opt.value)}>{opt.label}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300" onClick={() => setSelectedLaterality(opt.value)}>{opt.label}</span>
                 </label>
               ))}
             </div>
@@ -783,16 +783,16 @@ export function SurgeryDataEntry() {
             <div className="relative mt-1">
               <button
                 onClick={() => setDeviceOpen(!deviceOpen)}
-                className="w-full flex items-center justify-between px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full flex items-center justify-between px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <span className={selectedDevice ? "text-gray-900" : "text-gray-400"}>{selectedDevice || "장비 선택"}</span>
-                {deviceOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                <span className={selectedDevice ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>{selectedDevice || "장비 선택"}</span>
+                {deviceOpen ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
               </button>
               {deviceOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 overflow-hidden">
                   {devices.map((device) => (
                     <button key={device} onClick={() => { setSelectedDevice(device); setDeviceOpen(false); }}
-                      className={`w-full text-left px-4 py-3 text-sm hover:bg-blue-50 transition-colors ${selectedDevice === device ? "bg-blue-50 text-blue-700" : "text-gray-700"}`}>
+                      className={`w-full text-left px-4 py-3 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${selectedDevice === device ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700" : "text-gray-700 dark:text-gray-300"}`}>
                       {device}
                     </button>
                   ))}
@@ -813,7 +813,7 @@ export function SurgeryDataEntry() {
                     className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
                       scopeAngle === a
                         ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                        : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400"
                     }`}
                   >
                     {a}
@@ -823,7 +823,7 @@ export function SurgeryDataEntry() {
             </div>
             <div>
               <FieldLabel label="시각화 품질" sub="Visualization Quality" ksor="Optional" note="Surgeon-rated; consider for Phase 2" />
-              <select value={vizQuality} onChange={(e) => setVizQuality(e.target.value)} className={`${inputCls} bg-white mt-1`}>
+              <select value={vizQuality} onChange={(e) => setVizQuality(e.target.value)} className={`${inputCls} bg-white dark:bg-gray-800 mt-1`}>
                 <option value="">선택</option>
                 <option value="excellent">우수 (Excellent)</option>
                 <option value="good">양호 (Good)</option>
@@ -838,7 +838,7 @@ export function SurgeryDataEntry() {
       {/* ── Complications ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Complications</p>
-        <h2 className="text-base text-gray-900 mb-5">합병증</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">합병증</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
           <div>
             <FieldLabel label="수술 중 합병증" sub="Intraoperative Complication" ksor="Core" note="Dural tear, nerve injury, etc." />
@@ -884,7 +884,7 @@ export function SurgeryDataEntry() {
       {/* ── Follow-up ── */}
       <div className={sectionCls}>
         <p className="text-xs font-medium text-blue-600 uppercase tracking-wide mb-1">Follow-up</p>
-        <h2 className="text-base text-gray-900 mb-5">추적 관찰 시점</h2>
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">추적 관찰 시점</h2>
         <FieldLabel label="추적 관찰 시점 (Follow-up Timepoints)" ksor="Core" note="KSOR: more frequent early FU for endoscopic" />
         <div className="flex flex-wrap gap-2 mt-1">
           {followupTimepointMap.map(({ code, label }) => (
@@ -898,7 +898,7 @@ export function SurgeryDataEntry() {
               className={`px-4 py-1.5 rounded-full border text-sm transition-colors ${
                 followupTimepoints.includes(code)
                   ? "bg-blue-600 text-white border-blue-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+                  : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-400"
               }`}
             >
               {label}
@@ -911,10 +911,10 @@ export function SurgeryDataEntry() {
       )}
 
       {submitError && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">{submitError}</div>
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg text-sm text-red-700">{submitError}</div>
       )}
       {submitSuccess && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">저장되었습니다.</div>
+        <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-lg text-sm text-green-700">저장되었습니다.</div>
       )}
 
       {/* Save Button */}
@@ -938,7 +938,7 @@ export function SurgeryDataEntry() {
                 setSubmitError(null);
                 setTimeout(() => setSubmitSuccess(false), 3000);
               }}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               임시 저장
             </button>

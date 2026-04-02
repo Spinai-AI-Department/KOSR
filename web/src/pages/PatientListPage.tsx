@@ -34,7 +34,7 @@ function StatusBadge({ status }: { status: FollowUpStatus }) {
   const styles: Record<FollowUpStatus, string> = {
     Completed: "bg-green-100 text-green-700 border border-green-200",
     Pending:   "bg-yellow-100 text-yellow-700 border border-yellow-200",
-    "Not Due": "bg-gray-100 text-gray-500 border border-gray-200",
+    "Not Due": "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700",
     Overdue:   "bg-red-100 text-red-600 border border-red-200",
   };
   return (
@@ -58,7 +58,7 @@ function FollowUpCell({ status, timepointKey, followupTimepoints }: {
 
   // Not scheduled and no activity → show dash
   if (!isScheduled && status === "Not Due") {
-    return <span className="text-gray-300">—</span>;
+    return <span className="text-gray-300 dark:text-gray-600">—</span>;
   }
 
   return <StatusBadge status={status} />;
@@ -71,7 +71,7 @@ function RecentFUStatusBadge({ status }: { status: string }) {
     "지연":      "bg-red-100 text-red-600 border border-red-200",
   };
   return (
-    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${styles[status] ?? "bg-gray-100 text-gray-500"}`}>
+    <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${styles[status] ?? "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"}`}>
       {status}
     </span>
   );
@@ -367,12 +367,12 @@ function PatientListTab({ cache, onCacheUpdate }: {
   return (
     <>
       {listError && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg text-sm text-red-700">
           {listError}
         </div>
       )}
       {successMsg && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+        <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 rounded-lg text-sm text-green-700">
           {successMsg}
         </div>
       )}
@@ -386,7 +386,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
             placeholder="환자 번호"
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}
-            className="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
+            className="pl-9 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
           />
         </div>
         <div className="relative">
@@ -395,27 +395,27 @@ function PatientListTab({ cache, onCacheUpdate }: {
             placeholder="이름"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
           />
         </div>
         <div className="relative">
           <button
             onClick={() => setPeriodOpen(!periodOpen)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:bg-gray-50 focus:outline-none w-48"
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none w-48"
           >
-            <span className="flex-1 text-left text-gray-600">
+            <span className="flex-1 text-left text-gray-600 dark:text-gray-400">
               {selectedPeriod === "전체" ? "팔로업 기간" : selectedPeriod}
             </span>
             <ChevronDown className="w-4 h-4 text-gray-400" />
           </button>
           {periodOpen && (
-            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+            <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
               {followUpPeriods.map((period) => (
                 <button
                   key={period}
                   onClick={() => { setSelectedPeriod(period); setPeriodOpen(false); }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
-                    selectedPeriod === period ? "bg-blue-50 text-blue-700" : "text-gray-700"
+                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 first:rounded-t-lg last:rounded-b-lg ${
+                    selectedPeriod === period ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700" : "text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {period}
@@ -434,25 +434,25 @@ function PatientListTab({ cache, onCacheUpdate }: {
       </div>
 
       {/* Patient Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-6 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1200px]">
             <thead>
-              <tr className="border-b border-gray-200 bg-white">
-                <th className="text-left px-5 py-3.5 text-sm text-gray-700 whitespace-nowrap">번호</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">환자 번호</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">이름</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">성별/나이</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">내원일</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">수술일</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">진단코드</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">수술코드</th>
-                <th className="text-center px-3 py-3.5 text-sm text-gray-700 whitespace-nowrap">Pre-op</th>
-                <th className="text-center px-3 py-3.5 text-sm text-gray-700 whitespace-nowrap">1M</th>
-                <th className="text-center px-3 py-3.5 text-sm text-gray-700 whitespace-nowrap">3M</th>
-                <th className="text-center px-3 py-3.5 text-sm text-gray-700 whitespace-nowrap">6M</th>
-                <th className="text-center px-3 py-3.5 text-sm text-gray-700 whitespace-nowrap">1Y</th>
-                <th className="text-left px-4 py-3.5 text-sm text-gray-700 whitespace-nowrap">관리</th>
+              <tr className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <th className="text-left px-5 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">번호</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">환자 번호</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">이름</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">성별/나이</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">내원일</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">수술일</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">진단코드</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">수술코드</th>
+                <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Pre-op</th>
+                <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">1M</th>
+                <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">3M</th>
+                <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">6M</th>
+                <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">1Y</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">관리</th>
               </tr>
             </thead>
             <tbody>
@@ -466,16 +466,16 @@ function PatientListTab({ cache, onCacheUpdate }: {
               {!listLoading && filtered.map((patient, index) => (
                 <tr
                   key={`${patient.id}-${index}`}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  className="border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <td className="text-left px-5 py-3.5 text-sm text-gray-800 font-mono whitespace-nowrap">{(page - 1) * PAGE_SIZE + index + 1}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 font-mono whitespace-nowrap">{patient.id}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 whitespace-nowrap">{patient.name}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 whitespace-nowrap">{patient.genderAge}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 whitespace-nowrap">{patient.visitDate || "-"}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 whitespace-nowrap">{patient.surgeryDate || "-"}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 whitespace-nowrap">{patient.diagnosisCode || "-"}</td>
-                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 whitespace-nowrap">{patient.procedureCode || "-"}</td>
+                  <td className="text-left px-5 py-3.5 text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-nowrap">{(page - 1) * PAGE_SIZE + index + 1}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 font-mono whitespace-nowrap">{patient.id}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.name}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.genderAge}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.visitDate || "-"}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.surgeryDate || "-"}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.diagnosisCode || "-"}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.procedureCode || "-"}</td>
                   <td className="px-3 py-3.5 text-center"><FollowUpCell status={patient.preOp} timepointKey="preOp" followupTimepoints={patient.followupTimepoints} /></td>
                   <td className="px-3 py-3.5 text-center"><FollowUpCell status={patient.m1} timepointKey="m1" followupTimepoints={patient.followupTimepoints} /></td>
                   <td className="px-3 py-3.5 text-center"><FollowUpCell status={patient.m3} timepointKey="m3" followupTimepoints={patient.followupTimepoints} /></td>
@@ -484,13 +484,13 @@ function PatientListTab({ cache, onCacheUpdate }: {
                   <td className="text-left px-4 py-3.5">
                     <div className="flex items-center gap-2 relative">
                       <button
-                        className="p-1 text-gray-400 hover:text-gray-700 rounded"
+                        className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded"
                         onClick={() => navigate(`/surgery-entry?patient=${patient.caseId}`, { state: { patient } })}
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
-                        className="p-1 text-gray-400 hover:text-gray-700 rounded"
+                        className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded"
                         onClick={() =>
                           setOpenActionMenu(
                             openActionMenu === `${patient.id}-${index}` ? null : `${patient.id}-${index}`
@@ -500,15 +500,15 @@ function PatientListTab({ cache, onCacheUpdate }: {
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
                       {openActionMenu === `${patient.id}-${index}` && (
-                        <div className="absolute top-full right-0 mt-1 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                        <div className="absolute top-full right-0 mt-1 w-44 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-20">
                           <button
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-t-lg"
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-t-lg"
                             onClick={() => { setOpenActionMenu(null); navigate(`/surgery-entry?patient=${patient.caseId}&mode=view`, { state: { patient } }); }}
                           >
                             상세 보기
                           </button>
                           <button
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                             onClick={() => { setOpenActionMenu(null); navigate(`/surgery-entry?patient=${patient.caseId}&mode=followup`, { state: { patient } }); }}
                           >
                             F/U 입력
@@ -533,7 +533,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
               ))}
               {filtered.length === 0 && !listLoading && (
                 <tr>
-                  <td colSpan={14} className="px-5 py-10 text-center text-sm text-gray-400">
+                  <td colSpan={14} className="px-5 py-10 text-center text-sm text-gray-400 dark:text-gray-500">
                     검색 결과가 없습니다.
                   </td>
                 </tr>
@@ -541,10 +541,10 @@ function PatientListTab({ cache, onCacheUpdate }: {
             </tbody>
           </table>
         </div>
-        <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
-          <span className="text-sm text-gray-500">총 {total}명의 환자</span>
+        <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 flex items-center justify-between">
+          <span className="text-sm text-gray-500 dark:text-gray-400">총 {total}명의 환자</span>
           <div className="flex items-center gap-1">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="w-7 h-7 rounded text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-40">‹</button>
+            <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="w-7 h-7 rounded text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40">‹</button>
             {(() => {
               const startPage = Math.max(1, Math.min(page - 2, totalPages - 4));
               const endPage = Math.min(totalPages, startPage + 4);
@@ -552,31 +552,31 @@ function PatientListTab({ cache, onCacheUpdate }: {
                 <button
                   key={p}
                   onClick={() => setPage(p)}
-                  className={`w-7 h-7 rounded text-sm ${p === page ? "bg-gray-900 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+                  className={`w-7 h-7 rounded text-sm ${p === page ? "bg-gray-900 text-white" : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"}`}
                 >
                   {p}
                 </button>
               ));
             })()}
-            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="w-7 h-7 rounded text-sm text-gray-600 hover:bg-gray-100 disabled:opacity-40">›</button>
+            <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="w-7 h-7 rounded text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40">›</button>
           </div>
         </div>
       </div>
 
       {/* 최근 환자 F/U 현황 */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-gray-100">
-          <h2 className="text-base text-gray-900">최근 환자 F/U 현황</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+          <h2 className="text-base text-gray-900 dark:text-gray-100">최근 환자 F/U 현황</h2>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-100 dark:divide-gray-700">
           {recentFU.map((item, i) => (
-            <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 transition-colors">
+            <div key={i} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-800 font-mono">{item.id}</span>
-                <span className="text-sm text-gray-600">{item.name}</span>
+                <span className="text-sm text-gray-800 dark:text-gray-200 font-mono">{item.id}</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{item.name}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-xs text-gray-400">{item.date}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">{item.date}</span>
                 <RecentFUStatusBadge status={item.status} />
               </div>
             </div>
@@ -590,14 +590,14 @@ function PatientListTab({ cache, onCacheUpdate }: {
           className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setAlimtalkModal(null); }}
         >
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-base text-gray-900">AlimTalk 발송 — 팔로업 기간 선택</h2>
-              <button onClick={() => setAlimtalkModal(null)} className="p-1 text-gray-400 hover:text-gray-700 rounded">
+              <h2 className="text-base text-gray-900 dark:text-gray-100">AlimTalk 발송 — 팔로업 기간 선택</h2>
+              <button onClick={() => setAlimtalkModal(null)} className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-sm text-gray-500 mb-4">환자 ID: <span className="font-mono text-gray-800">{alimtalkModal.patientId}</span></p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">환자 ID: <span className="font-mono text-gray-800 dark:text-gray-200">{alimtalkModal.patientId}</span></p>
             {alimtalkError && (
               <p className="text-sm text-red-600 mb-3">{alimtalkError}</p>
             )}
@@ -607,7 +607,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
                   key={key}
                   onClick={() => handleSendAlimtalk(key)}
                   disabled={sending}
-                  className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-colors disabled:opacity-50"
+                  className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 transition-colors disabled:opacity-50"
                 >
                   {label}
                 </button>
@@ -635,17 +635,17 @@ function PatientListTab({ cache, onCacheUpdate }: {
           className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setShowNewPatientModal(false); }}
         >
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg text-gray-900">신규 환자 등록</h2>
-              <button onClick={() => setShowNewPatientModal(false)} className="p-1 text-gray-400 hover:text-gray-700 rounded">
+              <h2 className="text-lg text-gray-900 dark:text-gray-100">신규 환자 등록</h2>
+              <button onClick={() => setShowNewPatientModal(false)} className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 rounded">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">이름 (Name)</label>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">이름 (Name)</label>
                   <input
                     type="text"
                     data-field="이름"
@@ -656,12 +656,12 @@ function PatientListTab({ cache, onCacheUpdate }: {
                       setNewForm((f) => ({ ...f, name: e.target.value }));
                       setFormErrors((prev) => { const { '이름': _, ...rest } = prev; return rest; });
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors['이름'] ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 ${formErrors['이름'] ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                   />
                   {formErrors['이름'] && <p className="text-xs text-red-500 mt-1">{formErrors['이름']}</p>}
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">생년월일 (Birth Date)</label>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">생년월일 (Birth Date)</label>
                   <input
                     type="date"
                     max="9999-12-31"
@@ -671,13 +671,13 @@ function PatientListTab({ cache, onCacheUpdate }: {
                       setNewForm((f) => ({ ...f, birth_date: e.target.value }));
                       setFormErrors((prev) => { const { '생년월일': _, ...rest } = prev; return rest; });
                     }}
-                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${formErrors['생년월일'] ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 ${formErrors['생년월일'] ? 'border-red-500 ring-1 ring-red-500' : 'border-gray-300 dark:border-gray-600'}`}
                   />
                   {formErrors['생년월일'] && <p className="text-xs text-red-500 mt-1">{formErrors['생년월일']}</p>}
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-600 mb-1">성별 (Gender)</label>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">성별 (Gender)</label>
                 <div className="flex gap-3">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -686,7 +686,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
                       onChange={() => setNewForm((f) => ({ ...f, gender: "M" }))}
                       className="accent-blue-600"
                     />
-                    <span className="text-sm text-gray-700">남성 (M)</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">남성 (M)</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -695,7 +695,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
                       onChange={() => setNewForm((f) => ({ ...f, gender: "F" }))}
                       className="accent-blue-600"
                     />
-                    <span className="text-sm text-gray-700">여성 (F)</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">여성 (F)</span>
                   </label>
                 </div>
               </div>
@@ -706,7 +706,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => { setShowNewPatientModal(false); setFormErrors({}); }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 취소
               </button>
@@ -952,29 +952,29 @@ function ComplicationTab() {
   return (
     <div className="space-y-5">
       {/* Patient Selector */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-        <h2 className="text-base text-gray-900 mb-4">대상 환자 선택</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-4">대상 환자 선택</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">환자 번호</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">환자 번호</label>
             <input
               type="text"
               placeholder="예: KSOR-250331-001"
               value={lookupId}
               onChange={(e) => setLookupId(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handlePatientLookup()}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">이름 (Name)</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">이름 (Name)</label>
             <input
               type="text"
               placeholder="환자 이름"
               value={lookupName}
               onChange={(e) => setLookupName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handlePatientLookup()}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex items-end gap-2">
@@ -992,7 +992,7 @@ function ComplicationTab() {
         </div>
         {/* Search results list */}
         {lookupResults.length > 0 && (
-          <div className="mt-3 border border-gray-200 rounded-lg overflow-hidden">
+          <div className="mt-3 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             {lookupResults.map((p) => (
               <button
                 key={p.caseId}
@@ -1004,12 +1004,12 @@ function ComplicationTab() {
                   setLookupResults([]);
                   loadCaseDetail(p.caseId);
                 }}
-                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 border-b border-gray-100 last:border-b-0 flex justify-between items-center ${
-                  selectedCaseId === p.caseId ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                className={`w-full text-left px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 border-b border-gray-100 dark:border-gray-800 last:border-b-0 flex justify-between items-center ${
+                  selectedCaseId === p.caseId ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
                 <span>{p.name}</span>
-                <span className="text-xs text-gray-500">{p.patientId} · {p.genderAge}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">{p.patientId} · {p.genderAge}</span>
 
               </button>
             ))}
@@ -1019,13 +1019,13 @@ function ComplicationTab() {
 
       {/* Patient Info Summary */}
       {selectedCaseId && patientInfo && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
           <h3 className="text-sm font-medium text-blue-800 mb-2">선택된 환자 정보</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-            <div><span className="text-blue-600">이름:</span> <span className="text-gray-900">{lookupName}</span></div>
-            <div><span className="text-blue-600">성별/나이:</span> <span className="text-gray-900">{patientInfo.genderAge}</span></div>
-            <div><span className="text-blue-600">수술일:</span> <span className="text-gray-900">{patientInfo.surgeryDate || '-'}</span></div>
-            <div><span className="text-blue-600">진단:</span> <span className="text-gray-900">{patientInfo.diagnosisCode || '-'}</span></div>
+            <div><span className="text-blue-600">이름:</span> <span className="text-gray-900 dark:text-gray-100">{lookupName}</span></div>
+            <div><span className="text-blue-600">성별/나이:</span> <span className="text-gray-900 dark:text-gray-100">{patientInfo.genderAge}</span></div>
+            <div><span className="text-blue-600">수술일:</span> <span className="text-gray-900 dark:text-gray-100">{patientInfo.surgeryDate || '-'}</span></div>
+            <div><span className="text-blue-600">진단:</span> <span className="text-gray-900 dark:text-gray-100">{patientInfo.diagnosisCode || '-'}</span></div>
           </div>
         </div>
       )}
@@ -1033,13 +1033,13 @@ function ComplicationTab() {
       {/* Conversion + Reoperation */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* 수술 중 전환 */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-base text-gray-900 mb-5">수술 중 전환 (Conversion to open)</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+          <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">수술 중 전환 (Conversion to open)</h2>
           <div className="flex items-center gap-3 mb-4">
             <button
               onClick={() => setIsConversion(!isConversion)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isConversion ? "bg-blue-600" : "bg-gray-200"
+                isConversion ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
               }`}
             >
               <span
@@ -1048,7 +1048,7 @@ function ComplicationTab() {
                 }`}
               />
             </button>
-            <span className="text-sm text-gray-700">개방형 전환 여부 (Is it a conversion?)</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">개방형 전환 여부 (Is it a conversion?)</span>
           </div>
           <div>
             <input
@@ -1058,19 +1058,19 @@ function ComplicationTab() {
               onChange={(e) => setConversionReason(e.target.value)}
               placeholder="전환 사유 (Reason for conversion)"
               disabled={!isConversion}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500"
             />
           </div>
         </div>
 
         {/* 재수술 */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-base text-gray-900 mb-5">재수술 (Reoperation)</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+          <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">재수술 (Reoperation)</h2>
           <div className="flex items-center gap-3 mb-4">
             <button
               onClick={() => setIsReoperation(!isReoperation)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isReoperation ? "bg-blue-600" : "bg-gray-200"
+                isReoperation ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-700"
               }`}
             >
               <span
@@ -1079,7 +1079,7 @@ function ComplicationTab() {
                 }`}
               />
             </button>
-            <span className="text-sm text-gray-700">재수술 여부 (Is it a reoperation?)</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">재수술 여부 (Is it a reoperation?)</span>
           </div>
           <div className="relative">
             <input
@@ -1090,7 +1090,7 @@ function ComplicationTab() {
               onChange={(e) => setReoperationDate(e.target.value)}
               disabled={!isReoperation}
               placeholder="재수술 시행일 (Date of Reoperation)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-500"
             />
             <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
@@ -1098,12 +1098,12 @@ function ComplicationTab() {
       </div>
 
       {/* 합병증 세부 기록 */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-base text-gray-900 mb-5">합병증 세부 기록</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">합병증 세부 기록</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* 신경계 합병증 */}
           <div>
-            <h3 className="text-sm text-gray-800 mb-4">신경계 합병증 (Neurological)</h3>
+            <h3 className="text-sm text-gray-800 dark:text-gray-200 mb-4">신경계 합병증 (Neurological)</h3>
             <div className="space-y-3">
               {[
                 { key: "duralTear" as const, label: "Dural tear (신경막 손상)" },
@@ -1113,7 +1113,7 @@ function ComplicationTab() {
                 <label key={item.key} className="flex items-start gap-2.5 cursor-pointer group">
                   <div
                     className={`mt-0.5 w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                      complications[item.key] ? "border-blue-600 bg-blue-600" : "border-gray-300 group-hover:border-gray-400"
+                      complications[item.key] ? "border-blue-600 bg-blue-600" : "border-gray-300 dark:border-gray-600 group-hover:border-gray-400 dark:group-hover:border-gray-500"
                     }`}
                     onClick={() => toggleComp(item.key)}
                   >
@@ -1123,7 +1123,7 @@ function ComplicationTab() {
                       </svg>
                     )}
                   </div>
-                  <span className="text-sm text-gray-700" onClick={() => toggleComp(item.key)}>{item.label}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300" onClick={() => toggleComp(item.key)}>{item.label}</span>
                 </label>
               ))}
             </div>
@@ -1131,7 +1131,7 @@ function ComplicationTab() {
 
           {/* 감염 및 치유 */}
           <div>
-            <h3 className="text-sm text-gray-800 mb-4">감염 및 치유 (Infection &amp; Healing)</h3>
+            <h3 className="text-sm text-gray-800 dark:text-gray-200 mb-4">감염 및 치유 (Infection &amp; Healing)</h3>
             <div className="space-y-3">
               {[
                 { key: "ssiSuperficial" as const, label: "표층 수술 부위 감염 (Superficial SSI)" },
@@ -1141,7 +1141,7 @@ function ComplicationTab() {
                 <label key={item.key} className="flex items-start gap-2.5 cursor-pointer group">
                   <div
                     className={`mt-0.5 w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                      complications[item.key] ? "border-blue-600 bg-blue-600" : "border-gray-300 group-hover:border-gray-400"
+                      complications[item.key] ? "border-blue-600 bg-blue-600" : "border-gray-300 dark:border-gray-600 group-hover:border-gray-400 dark:group-hover:border-gray-500"
                     }`}
                     onClick={() => toggleComp(item.key)}
                   >
@@ -1151,7 +1151,7 @@ function ComplicationTab() {
                       </svg>
                     )}
                   </div>
-                  <span className="text-sm text-gray-700" onClick={() => toggleComp(item.key)}>{item.label}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300" onClick={() => toggleComp(item.key)}>{item.label}</span>
                 </label>
               ))}
             </div>
@@ -1159,7 +1159,7 @@ function ComplicationTab() {
 
           {/* 기기 관련 및 기타 */}
           <div>
-            <h3 className="text-sm text-gray-800 mb-4">기기 관련 및 기타 (Hardware &amp; Other)</h3>
+            <h3 className="text-sm text-gray-800 dark:text-gray-200 mb-4">기기 관련 및 기타 (Hardware &amp; Other)</h3>
             <div className="space-y-3">
               {[
                 { key: "instrumentBreakage" as const, label: "기기 파손 (Instrument Breakage)" },
@@ -1169,7 +1169,7 @@ function ComplicationTab() {
                 <label key={item.key} className="flex items-start gap-2.5 cursor-pointer group">
                   <div
                     className={`mt-0.5 w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                      complications[item.key] ? "border-blue-600 bg-blue-600" : "border-gray-300 group-hover:border-gray-400"
+                      complications[item.key] ? "border-blue-600 bg-blue-600" : "border-gray-300 dark:border-gray-600 group-hover:border-gray-400 dark:group-hover:border-gray-500"
                     }`}
                     onClick={() => toggleComp(item.key)}
                   >
@@ -1179,7 +1179,7 @@ function ComplicationTab() {
                       </svg>
                     )}
                   </div>
-                  <span className="text-sm text-gray-700" onClick={() => toggleComp(item.key)}>{item.label}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300" onClick={() => toggleComp(item.key)}>{item.label}</span>
                 </label>
               ))}
             </div>
@@ -1188,12 +1188,12 @@ function ComplicationTab() {
       </div>
 
       {/* 중증도 및 기록 */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h2 className="text-base text-gray-900 mb-5">중증도 및 기록 (Severity &amp; Notes)</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+        <h2 className="text-base text-gray-900 dark:text-gray-100 mb-5">중증도 및 기록 (Severity &amp; Notes)</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* 합병증 발생일 */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">
               합병증 발생일 (Date of Occurrence)
             </label>
             <div className="relative">
@@ -1203,15 +1203,15 @@ function ComplicationTab() {
                 data-field="occurrenceDate"
                 value={occurrenceDate}
                 onChange={(e) => setOccurrenceDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500 pointer-events-none" />
             </div>
           </div>
 
           {/* 상세 증상 및 처치 */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">
               상세 증상 및 처치 (Detailed Symptoms &amp; Treatment)
             </label>
             <input
@@ -1220,33 +1220,33 @@ function ComplicationTab() {
               value={symptoms}
               onChange={(e) => setSymptoms(e.target.value)}
               placeholder="증상 및 처치 내용"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* 합병증 중증도 */}
           <div>
-            <label className="block text-sm text-gray-600 mb-1.5">
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">
               합병증 중증도 (Complication Severity)
             </label>
             <div className="relative">
               <button
                 onClick={() => setSeverityOpen(!severity)}
-                className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-800 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <span className={selectedSeverity ? "text-gray-900" : "text-gray-400"}>
+                <span className={selectedSeverity ? "text-gray-900 dark:text-gray-100" : "text-gray-400 dark:text-gray-500"}>
                   {selectedSeverity || "Grade 1, 2, 3, ..., Grade 1, ..."}
                 </span>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </button>
               {severity && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 overflow-hidden">
                   {severityOptions.map((opt) => (
                     <button
                       key={opt}
                       onClick={() => { setSelectedSeverity(opt); setSeverityOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 ${
-                        selectedSeverity === opt ? "bg-blue-50 text-blue-700" : "text-gray-700"
+                      className={`w-full text-left px-4 py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 ${
+                        selectedSeverity === opt ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700" : "text-gray-700 dark:text-gray-300"
                       }`}
                     >
                       {opt}
@@ -1269,7 +1269,7 @@ function ComplicationTab() {
       <div className="flex justify-end gap-3">
         <button
           onClick={handleResetForm}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           초기화
         </button>
@@ -1300,15 +1300,15 @@ export function PatientTracking() {
   ];
 
   return (
-    <div className="p-4 md:p-8 min-h-screen bg-gray-50">
+    <div className="p-4 md:p-8 min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl md:text-2xl text-gray-900">KOMISS / KSOR Registry</h1>
-        <p className="text-gray-500 mt-1">Patient Management &amp; Follow-up Tracker</p>
+        <h1 className="text-xl md:text-2xl text-gray-900 dark:text-gray-100">KOMISS / KSOR Registry</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Patient Management &amp; Follow-up Tracker</p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 mb-6 bg-white border border-gray-200 rounded-xl p-1 w-fit shadow-sm">
+      <div className="flex gap-1 mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-1 w-fit shadow-sm">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -1316,7 +1316,7 @@ export function PatientTracking() {
             className={`px-5 py-2 rounded-lg text-sm transition-colors ${
               activeTab === tab.key
                 ? "bg-gray-900 text-white"
-                : "text-gray-600 hover:bg-gray-100"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
             }`}
           >
             {tab.label}

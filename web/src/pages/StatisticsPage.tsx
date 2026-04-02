@@ -129,7 +129,7 @@ export function SurgeryAnalysis() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl mb-2">성과 분석</h1>
-          <p className="text-gray-600">환자별 수술 결과 및 성과 데이터 분석</p>
+          <p className="text-gray-600 dark:text-gray-400">환자별 수술 결과 및 성과 데이터 분석</p>
         </div>
         <Select value={period} onValueChange={setPeriod}>
           <SelectTrigger className="w-full sm:w-48">
@@ -146,39 +146,39 @@ export function SurgeryAnalysis() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card className="p-6 bg-white">
+        <Card className="p-6 bg-white dark:bg-gray-900">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">평균 VAS 개선도</div>
-            <TrendingUp className="w-5 h-5 text-green-600" />
+            <div className="text-sm text-gray-600 dark:text-gray-400">평균 VAS 개선도</div>
+            <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
-          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.avgVasImprovement.toFixed(1)}%</div><div className="text-xs text-gray-500">환자 {keyMetrics.totalPatients}명 기준</div></>}
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.avgVasImprovement.toFixed(1)}%</div><div className="text-xs text-gray-500 dark:text-gray-400">환자 {keyMetrics.totalPatients}명 기준</div></>}
         </Card>
-        <Card className="p-6 bg-white">
+        <Card className="p-6 bg-white dark:bg-gray-900">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">평균 ODI 개선도</div>
-            <TrendingUp className="w-5 h-5 text-green-600" />
+            <div className="text-sm text-gray-600 dark:text-gray-400">평균 ODI 개선도</div>
+            <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
           </div>
-          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.avgOdiImprovement.toFixed(1)}%</div><div className="text-xs text-gray-500">환자 {keyMetrics.totalPatients}명 기준</div></>}
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.avgOdiImprovement.toFixed(1)}%</div><div className="text-xs text-gray-500 dark:text-gray-400">환자 {keyMetrics.totalPatients}명 기준</div></>}
         </Card>
-        <Card className="p-6 bg-white">
+        <Card className="p-6 bg-white dark:bg-gray-900">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">환자 만족도</div>
-            <Activity className="w-5 h-5 text-blue-600" />
+            <div className="text-sm text-gray-600 dark:text-gray-400">환자 만족도</div>
+            <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.satisfactionRate.toFixed(1)}%</div><div className="text-xs text-gray-500">{keyMetrics.totalSatisfaction}명 중 {keyMetrics.satisfiedCount}명</div></>}
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.satisfactionRate.toFixed(1)}%</div><div className="text-xs text-gray-500 dark:text-gray-400">{keyMetrics.totalSatisfaction}명 중 {keyMetrics.satisfiedCount}명</div></>}
         </Card>
-        <Card className="p-6 bg-white">
+        <Card className="p-6 bg-white dark:bg-gray-900">
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-gray-600">합병증율</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">합병증율</div>
             <TrendingDown className="w-5 h-5 text-red-600" />
           </div>
-          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.reoperationRate.toFixed(1)}%</div><div className="text-xs text-gray-500">{keyMetrics.totalPatients}명 중 {keyMetrics.reoperationCount}명</div></>}
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.reoperationRate.toFixed(1)}%</div><div className="text-xs text-gray-500 dark:text-gray-400">{keyMetrics.totalPatients}명 중 {keyMetrics.reoperationCount}명</div></>}
         </Card>
       </div>
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <Card className="p-6 bg-white min-h-[340px]">
+        <Card className="p-6 bg-white dark:bg-gray-900 min-h-[340px]">
           <h3 className="text-lg mb-4">평균 회복 추이 (VAS & ODI)</h3>
           {loading ? (
             <div className="flex items-center justify-center h-[280px]">
@@ -202,7 +202,7 @@ export function SurgeryAnalysis() {
           )}
         </Card>
 
-        <Card className="p-6 bg-white min-h-[340px]">
+        <Card className="p-6 bg-white dark:bg-gray-900 min-h-[340px]">
           <h3 className="text-lg mb-4">환자 만족도 분석</h3>
           {loading ? (
             <div className="flex items-center justify-center h-[280px]">
@@ -224,7 +224,7 @@ export function SurgeryAnalysis() {
 
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <Card className="p-6 bg-white min-h-[340px]">
+        <Card className="p-6 bg-white dark:bg-gray-900 min-h-[340px]">
           <h3 className="text-lg mb-4">수술 접근법별 비교 분석</h3>
           {loading ? (
             <div className="flex items-center justify-center h-[280px]">
@@ -249,14 +249,14 @@ export function SurgeryAnalysis() {
                   }
                 </BarChart>
               </ResponsiveContainer>
-              <div className="text-xs text-gray-500 mt-2">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                 * 수술시간(분), 출혈량(ml), 입원기간(일), 합병증율(%)
               </div>
             </>
           )}
         </Card>
 
-        <Card className="p-6 bg-white min-h-[340px]">
+        <Card className="p-6 bg-white dark:bg-gray-900 min-h-[340px]">
           <h3 className="text-lg mb-4">환자 연령별 개선도 분포</h3>
           {loading ? (
             <div className="flex items-center justify-center h-[280px]">
@@ -278,7 +278,7 @@ export function SurgeryAnalysis() {
       </div>
 
       {/* Patient Details Table */}
-      <Card className="p-4 md:p-6 bg-white">
+      <Card className="p-4 md:p-6 bg-white dark:bg-gray-900">
         <h3 className="text-lg mb-4">최근 환자 성과 상세</h3>
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -288,19 +288,19 @@ export function SurgeryAnalysis() {
           <div className="overflow-x-auto">
           <table className="w-full min-w-[600px]">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm text-gray-600">환자 ID</th>
-                <th className="text-center py-3 px-4 text-sm text-gray-600">연령</th>
-                <th className="text-center py-3 px-4 text-sm text-gray-600">수술 전 VAS</th>
-                <th className="text-center py-3 px-4 text-sm text-gray-600">수술 후 VAS</th>
-                <th className="text-center py-3 px-4 text-sm text-gray-600">개선도</th>
-                <th className="text-center py-3 px-4 text-sm text-gray-600">수술 방법</th>
-                <th className="text-center py-3 px-4 text-sm text-gray-600">만족도</th>
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-3 px-4 text-sm text-gray-600 dark:text-gray-400">환자 ID</th>
+                <th className="text-center py-3 px-4 text-sm text-gray-600 dark:text-gray-400">연령</th>
+                <th className="text-center py-3 px-4 text-sm text-gray-600 dark:text-gray-400">수술 전 VAS</th>
+                <th className="text-center py-3 px-4 text-sm text-gray-600 dark:text-gray-400">수술 후 VAS</th>
+                <th className="text-center py-3 px-4 text-sm text-gray-600 dark:text-gray-400">개선도</th>
+                <th className="text-center py-3 px-4 text-sm text-gray-600 dark:text-gray-400">수술 방법</th>
+                <th className="text-center py-3 px-4 text-sm text-gray-600 dark:text-gray-400">만족도</th>
               </tr>
             </thead>
             <tbody>
               {patientOutcomes.map((patient) => (
-                <tr key={patient.id} className="border-b border-gray-100">
+                <tr key={patient.id} className="border-b border-gray-100 dark:border-gray-800">
                   <td className="text-left py-3 px-4 text-sm">{patient.id}</td>
                   <td className="text-center py-3 px-4 text-sm">{patient.age ? `${patient.age}세` : '—'}</td>
                   <td className="text-center py-3 px-4 text-sm">{patient.preVAS}</td>

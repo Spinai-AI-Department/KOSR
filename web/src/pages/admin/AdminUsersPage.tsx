@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 function statusBadge(isActive: boolean) {
   return isActive
     ? <Badge variant="outline" className="text-green-600 border-green-400">활성</Badge>
-    : <Badge variant="outline" className="text-gray-500 border-gray-300">정지</Badge>;
+    : <Badge variant="outline" className="text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">정지</Badge>;
 }
 
 function actionBadge(action: string) {
@@ -49,11 +49,11 @@ function RejectDialog({ user, onClose, onConfirm, loading }: RejectDialogProps) 
           <DialogTitle>회원가입 거절</DialogTitle>
         </DialogHeader>
         <div className="space-y-3 py-2">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             <span className="font-medium">{user?.full_name}</span> ({user?.login_id}) 님의 가입 신청을 거절하시겠습니까?
           </p>
           <div>
-            <label className="block text-sm text-gray-700 mb-1">거절 사유 (선택)</label>
+            <label className="block text-sm text-gray-700 dark:text-gray-300 mb-1">거절 사유 (선택)</label>
             <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
@@ -173,7 +173,7 @@ export function AdminUsersPage() {
 
   if (!token) {
     return (
-      <div className="p-8 text-center text-gray-500 text-sm">
+      <div className="p-8 text-center text-gray-500 dark:text-gray-400 text-sm">
         실제 계정으로 로그인 후 이용할 수 있습니다.
       </div>
     );
@@ -182,12 +182,12 @@ export function AdminUsersPage() {
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl text-gray-900 mb-1">사용자 관리</h1>
-        <p className="text-gray-500 text-sm">회원가입 승인 및 사용자 계정을 관리합니다.</p>
+        <h1 className="text-2xl text-gray-900 dark:text-gray-100 mb-1">사용자 관리</h1>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">회원가입 승인 및 사용자 계정을 관리합니다.</p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+        <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg text-sm text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
@@ -208,9 +208,9 @@ export function AdminUsersPage() {
 
         {/* Tab 1: Pending Users */}
         <TabsContent value="pending">
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
             <table className="w-full min-w-[700px] text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">이름</th>
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">아이디</th>
@@ -221,7 +221,7 @@ export function AdminUsersPage() {
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">작업</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {pendingLoading ? (
                   <tr>
                     <td colSpan={7} className="py-16 text-center">
@@ -230,16 +230,16 @@ export function AdminUsersPage() {
                   </tr>
                 ) : !pendingData || pendingData.items.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-gray-400 text-sm">승인 대기 중인 사용자가 없습니다.</td>
+                    <td colSpan={7} className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">승인 대기 중인 사용자가 없습니다.</td>
                   </tr>
                 ) : pendingData.items.map((user) => (
-                  <tr key={user.user_id} className="bg-white hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{user.full_name}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{user.login_id}</td>
+                  <tr key={user.user_id} className="bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{user.full_name}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{user.login_id}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{roleLabel(user.role_code)}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{user.hospital_code ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{user.email ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{user.hospital_code ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{user.email ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {new Date(user.created_at).toLocaleDateString("ko-KR")}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -275,7 +275,7 @@ export function AdminUsersPage() {
           {pendingData && pendingData.pagination.total_pages > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               <Button variant="outline" size="sm" disabled={pendingPage <= 1} onClick={() => setPendingPage((p) => p - 1)}>이전</Button>
-              <span className="flex items-center text-sm text-gray-600">
+              <span className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 {pendingPage} / {pendingData.pagination.total_pages}
               </span>
               <Button variant="outline" size="sm" disabled={pendingPage >= pendingData.pagination.total_pages} onClick={() => setPendingPage((p) => p + 1)}>다음</Button>
@@ -285,9 +285,9 @@ export function AdminUsersPage() {
 
         {/* Tab 2: All Users */}
         <TabsContent value="all">
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
             <table className="w-full min-w-[800px] text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">이름</th>
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">아이디</th>
@@ -299,7 +299,7 @@ export function AdminUsersPage() {
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">작업</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {allLoading ? (
                   <tr>
                     <td colSpan={8} className="py-16 text-center">
@@ -308,19 +308,19 @@ export function AdminUsersPage() {
                   </tr>
                 ) : !allData || allData.items.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-16 text-center text-gray-400 text-sm">사용자가 없습니다.</td>
+                    <td colSpan={8} className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">사용자가 없습니다.</td>
                   </tr>
                 ) : allData.items.map((user) => (
-                  <tr key={user.user_id} className="bg-white hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{user.full_name}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{user.login_id}</td>
+                  <tr key={user.user_id} className="bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{user.full_name}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{user.login_id}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{roleLabel(user.role_code)}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{user.hospital_code ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{user.hospital_code ?? "—"}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{statusBadge(user.is_active)}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {new Date(user.created_at).toLocaleDateString("ko-KR")}
                     </td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {user.last_login_at ? new Date(user.last_login_at).toLocaleDateString("ko-KR") : "—"}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
@@ -354,7 +354,7 @@ export function AdminUsersPage() {
           {allData && allData.pagination.total_pages > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               <Button variant="outline" size="sm" disabled={allPage <= 1} onClick={() => setAllPage((p) => p - 1)}>이전</Button>
-              <span className="flex items-center text-sm text-gray-600">
+              <span className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 {allPage} / {allData.pagination.total_pages}
               </span>
               <Button variant="outline" size="sm" disabled={allPage >= allData.pagination.total_pages} onClick={() => setAllPage((p) => p + 1)}>다음</Button>
@@ -364,9 +364,9 @@ export function AdminUsersPage() {
 
         {/* Tab 3: Approval Logs */}
         <TabsContent value="logs">
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
             <table className="w-full min-w-[900px] text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">구분</th>
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">이름</th>
@@ -378,7 +378,7 @@ export function AdminUsersPage() {
                   <th className="px-4 py-3 text-left font-medium whitespace-nowrap">일시</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {logLoading ? (
                   <tr>
                     <td colSpan={8} className="py-16 text-center">
@@ -387,18 +387,18 @@ export function AdminUsersPage() {
                   </tr>
                 ) : !logData || logData.items.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-16 text-center text-gray-400 text-sm">로그가 없습니다.</td>
+                    <td colSpan={8} className="py-16 text-center text-gray-400 dark:text-gray-500 text-sm">로그가 없습니다.</td>
                   </tr>
                 ) : logData.items.map((log: ApprovalLogItem, idx: number) => (
-                  <tr key={`${log.user_id}-${log.action}-${idx}`} className="bg-white hover:bg-gray-50">
+                  <tr key={`${log.user_id}-${log.action}-${idx}`} className="bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800">
                     <td className="px-4 py-3 whitespace-nowrap">{actionBadge(log.action)}</td>
-                    <td className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">{log.full_name}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{log.login_id}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{roleLabel(log.role_code)}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{log.hospital_code ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{log.actor_name ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{log.rejection_reason ?? "—"}</td>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{log.full_name}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{log.login_id}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{roleLabel(log.role_code)}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{log.hospital_code ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">{log.actor_name ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 max-w-xs truncate">{log.rejection_reason ?? "—"}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {new Date(log.acted_at).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" })}
                     </td>
                   </tr>
@@ -410,7 +410,7 @@ export function AdminUsersPage() {
           {logData && logData.pagination.total_pages > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               <Button variant="outline" size="sm" disabled={logPage <= 1} onClick={() => setLogPage((p) => p - 1)}>이전</Button>
-              <span className="flex items-center text-sm text-gray-600">
+              <span className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 {logPage} / {logData.pagination.total_pages}
               </span>
               <Button variant="outline" size="sm" disabled={logPage >= logData.pagination.total_pages} onClick={() => setLogPage((p) => p + 1)}>다음</Button>
