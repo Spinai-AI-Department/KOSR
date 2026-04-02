@@ -144,7 +144,16 @@ export function SurgeryAnalysis() {
         </Select>
       </div>
 
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
+        </div>
+      )}
+
       {/* Key Metrics */}
+      {!loading && (
+      <>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="p-6 bg-white">
           <div className="flex items-center justify-between mb-2">
@@ -302,6 +311,8 @@ export function SurgeryAnalysis() {
         </table>
         </div>
       </Card>
+      </>
+      )}
     </div>
   );
 }

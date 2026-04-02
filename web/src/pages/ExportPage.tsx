@@ -115,23 +115,32 @@ export function Reports() {
         </div>
       )}
 
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
+        </div>
+      )}
+
       {/* Summary Cards */}
+      {!loading && (
+      <>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-1">총 수술 건수</div>
-          <div className="text-xl md:text-3xl mb-1">{loading ? '…' : `${summary.total_surgeries}건`}</div>
+          <div className="text-xl md:text-3xl mb-1">{`${summary.total_surgeries}건`}</div>
         </Card>
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-1">평균 수술 성공률</div>
-          <div className="text-xl md:text-3xl mb-1">{loading ? '…' : `${summary.success_rate}%`}</div>
+          <div className="text-xl md:text-3xl mb-1">{`${summary.success_rate}%`}</div>
         </Card>
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-1">합병증 발생률</div>
-          <div className="text-xl md:text-3xl mb-1">{loading ? '…' : `${summary.complication_rate}%`}</div>
+          <div className="text-xl md:text-3xl mb-1">{`${summary.complication_rate}%`}</div>
         </Card>
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-1">평균 입원 기간</div>
-          <div className="text-xl md:text-3xl mb-1">{loading ? '…' : `${summary.avg_hospital_days}일`}</div>
+          <div className="text-xl md:text-3xl mb-1">{`${summary.avg_hospital_days}일`}</div>
         </Card>
       </div>
 
@@ -196,6 +205,8 @@ export function Reports() {
           </table>
         </div>
       </Card>
+      </>
+      )}
     </div>
   );
 }

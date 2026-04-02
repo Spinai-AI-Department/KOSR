@@ -71,7 +71,7 @@ export default function SurveyQuestionsPage() {
     return (
       <MobileFrame>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1, padding: '40px' }}>
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>설문을 불러오는 중...</p>
+          <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
         </div>
       </MobileFrame>
     );

@@ -46,27 +46,37 @@ export function Dashboard() {
         </div>
       )}
 
+      {/* Loading Spinner */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
+        </div>
+      )}
+
       {/* Stats Cards */}
+      {!loading && (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 md:mb-8">
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-2">총 수술 건수</div>
-          <div className="text-2xl md:text-4xl">{loading ? '…' : stats.total_surgeries}</div>
+          <div className="text-2xl md:text-4xl">{stats.total_surgeries}</div>
         </Card>
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-2">이번 달 수술</div>
-          <div className="text-2xl md:text-4xl">{loading ? '…' : stats.monthly_surgeries}</div>
+          <div className="text-2xl md:text-4xl">{stats.monthly_surgeries}</div>
         </Card>
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-2">PROM 대기 건수</div>
-          <div className="text-2xl md:text-4xl">{loading ? '…' : `${stats.prom_pending_cases} 건`}</div>
+          <div className="text-2xl md:text-4xl">{`${stats.prom_pending_cases} 건`}</div>
         </Card>
         <Card className="p-6 bg-white">
           <div className="text-sm text-gray-600 mb-2">합병증 건수</div>
-          <div className="text-2xl md:text-4xl">{loading ? '…' : `${stats.complications_count} 건`}</div>
+          <div className="text-2xl md:text-4xl">{`${stats.complications_count} 건`}</div>
         </Card>
       </div>
+      )}
 
       {/* Charts Row */}
+      {!loading && (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 md:mb-8">
         {/* VAS & ODI Chart */}
         <Card className="p-6 bg-white">
@@ -132,6 +142,7 @@ export function Dashboard() {
           </div>
         </Card>
       </div>
+      )}
 
     </div>
   );

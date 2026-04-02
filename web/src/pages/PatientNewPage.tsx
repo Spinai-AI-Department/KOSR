@@ -479,7 +479,7 @@ export function SurgeryDataEntry() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <p className="text-gray-500">데이터를 불러오는 중...</p>
+        <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
       </div>
     );
   }
