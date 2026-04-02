@@ -16,7 +16,7 @@ from app.core.security import (
     password_manager,
 )
 from app.db.queries import execute, fetch_all, fetch_one, fetch_val
-from app.models.auth import LoginRequest, LoginResponseData, MyProfileResponse, RefreshTokenRequest, RefreshTokenResponseData, UserInfo
+from app.models.auth import LoginRequest, LoginResponseData, MyProfileResponse, RefreshTokenRequest, RefreshTokenResponseData, SignupRequest, UserInfo
 
 
 async def _login_throttle_check(conn: AsyncConnection, login_id: str, client_ip: str | None) -> None:
@@ -86,6 +86,12 @@ async def login(conn: AsyncConnection, payload: LoginRequest) -> LoginResponseDa
             ),
         )
         raise UnauthorizedError(message="아이디 또는 비밀번호가 일치하지 않습니다.", error_code="AUTH_INVALID_CREDENTIALS")
+
+    approval = str(snapshot["approval_status"])
+    if approval == "PENDING":
+        raise UnauthorizedError(message="회원가입 승인 대기 중입니다.", error_code="AUTH_PENDING_APPROVAL")
+    if approval == "REJECTED":
+        raise UnauthorizedError(message="회원가입이 거절되었습니다.", error_code="AUTH_SIGNUP_REJECTED")
 
     if not snapshot["is_active"]:
         raise UnauthorizedError(message="비활성화된 계정입니다.", error_code="AUTH_INACTIVE")
@@ -437,3 +443,64 @@ async def request_password_reset(conn: AsyncConnection, *, login_id: str, email:
         "email": row["email"],
         "temporary_password": temp_password if settings.app_env != "production" else None,
     }
+
+
+async def signup(conn: AsyncConnection, payload: SignupRequest) -> None:
+    """Register a new user account in PENDING state awaiting admin approval."""
+    if payload.password.get_secret_value() != payload.password_confirm.get_secret_value():
+        raise ValidationError("비밀번호 확인 값이 일치하지 않습니다.", error_code="VALIDATION_PASSWORD_CONFIRM_MISMATCH")
+
+    existing_login = await fetch_val(
+        conn,
+        "SELECT 1 FROM auth.user_account WHERE lower(login_id) = lower(%s) AND deleted_at IS NULL",
+        (payload.login_id,),
+    )
+    if existing_login:
+        raise ConflictError("이미 사용 중인 아이디입니다.", error_code="USER_LOGIN_ID_DUPLICATE")
+
+    if payload.email:
+        existing_email = await fetch_val(
+            conn,
+            "SELECT 1 FROM auth.user_account WHERE lower(email) = lower(%s) AND deleted_at IS NULL",
+            (payload.email,),
+        )
+        if existing_email:
+            raise ConflictError("이미 사용 중인 이메일입니다.", error_code="USER_EMAIL_DUPLICATE")
+
+    if payload.role_code not in ("PI", "CRC"):
+        raise ValidationError("자가 회원가입은 PI 또는 CRC 역할만 가능합니다.", error_code="VALIDATION_INVALID_ROLE")
+
+    password_hash = await password_manager.hash_password(payload.password.get_secret_value())
+
+    await execute(
+        conn,
+        """
+        INSERT INTO auth.user_account (
+            user_id, hospital_code, login_id, password_hash, password_algo, full_name,
+            email, phone, role_code, department, specialty, license_number,
+            is_first_login, password_reset_required,
+            is_active, is_locked, failed_login_count,
+            approval_status,
+            created_at, updated_at
+        ) VALUES (
+            gen_random_uuid(), %s, %s, %s, 'argon2id', %s,
+            %s, %s, %s::auth.app_role, %s, %s, %s,
+            true, false,
+            false, false, 0,
+            'PENDING',
+            now(), now()
+        )
+        """,
+        (
+            payload.hospital_code,
+            payload.login_id,
+            password_hash,
+            payload.full_name,
+            payload.email,
+            payload.phone,
+            payload.role_code,
+            payload.department,
+            payload.specialty,
+            payload.license_number,
+        ),
+    )

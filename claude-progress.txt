@@ -1,0 +1,79 @@
+# KSOR Approval System — Progress Log
+Last updated: 2026-04-02T00:00:00Z
+Active agent: Reviewer Agent
+Last completed feature: FE-08
+Next feature: —
+
+## Completed
+
+### Phase 1 — DB
+- DB-01: auth.signup_status enum 추가 (ksor_schema.sql + migration 002)
+- DB-02: auth.user_account approval 컬럼 4개 추가 (ADD COLUMN IF NOT EXISTS)
+- DB-03: idx_user_account_approval_pending 부분 인덱스 추가
+- DB-04: auth.get_user_auth_snapshot() RETURNS TABLE에 approval_status 추가
+- DB-05: tg_guard_user_account_update에 approval_status 가드 추가
+- DB-06: p_user_account_insert_signup RLS 정책 추가
+
+### Phase 2 — Backend
+- BE-01: SignupRequest Pydantic 모델 (models/auth.py)
+- BE-02: AdminRejectUserRequest, AdminUserItem.approval_status (models/admin.py)
+- BE-03: auth_service.signup() — 비밀번호 확인, 중복 체크, PENDING INSERT
+- BE-04: auth_service.login() — approval_status 체크 (PENDING/REJECTED 오류)
+- BE-05: admin_service: list_pending_users(), approve_user(), reject_user()
+- BE-06: POST /auth/signup 엔드포인트 (공개, get_db_auth)
+- BE-07: GET /auth/hospitals 엔드포인트 (공개, ref.hospital 조회)
+- BE-08: GET /admin/users/pending, PUT /admin/users/{id}/approve, PUT /admin/users/{id}/reject
+
+### Phase 3 — Frontend
+- FE-01: web/src/api/admin.ts 생성, index.ts re-export
+- FE-02: auth.ts에 signup(), getHospitals() 추가
+- FE-03: SignupPage.tsx — two-panel 레이아웃, 전체 필드, 성공 메시지
+- FE-04: AdminUsersPage.tsx — Tabs (승인 대기/전체), 승인/거절 버튼, 거절 다이얼로그
+- FE-05: router.tsx — /signup (공개), /admin/users (보호)
+- FE-06: Layout.tsx — ADMIN/STEERING 역할에만 '사용자 관리' 메뉴 표시
+- FE-07: LoginPage.tsx — '계정이 없으신가요? 회원가입' 링크
+- FE-08: 에러 전파 확인 — 기존 client.ts가 message 필드 정확히 추출함 (추가 변경 불필요)
+
+## Reviewer reports
+
+### Phase 1 — DB — PASS
+- [x] auth.signup_status ENUM 생성됨 (migration 002 + ksor_schema.sql)
+- [x] ADD COLUMN IF NOT EXISTS로 멱등성 보장
+- [x] 부분 인덱스 생성됨
+- [x] get_user_auth_snapshot() 함수 업데이트됨
+- [x] 트리거 가드 업데이트됨
+- [x] RLS 정책 추가됨 (admin + signup 두 정책)
+- [x] 하드코딩 크리덴셜 없음
+
+### Phase 2 — Backend — PASS
+- [x] SignupRequest 모델 — 모든 필드, Pydantic validation
+- [x] AdminRejectUserRequest, AdminUserItem.approval_status 추가됨
+- [x] signup() — 비밀번호 확인, 중복 체크, is_active=false, approval_status='PENDING'
+- [x] login() — approval_status 체크가 is_active 체크보다 먼저 실행됨
+- [x] list_pending_users(), approve_user(), reject_user() 구현됨
+- [x] 공개 엔드포인트 (signup, hospitals)는 get_db_auth 사용
+- [x] admin 엔드포인트는 require_admin 의존성 사용
+- [x] 한국어 에러 메시지 PLAN.md와 일치
+
+### Phase 3 — Frontend — PASS
+- [x] adminService 모듈 생성 및 re-export
+- [x] signup(), getHospitals() auth API에 추가됨
+- [x] SignupPage — 두 패널 레이아웃, 모든 필드, 성공 화면
+- [x] AdminUsersPage — Tabs, 승인/거절 버튼, 거절 다이얼로그, 페이지네이션
+- [x] 라우터 업데이트 (/signup 공개, /admin/users 보호됨)
+- [x] Layout — ADMIN/STEERING만 '사용자 관리' 표시
+- [x] LoginPage — '회원가입' 링크 추가
+- [x] 에러 메시지 전파 — 기존 client.ts 인프라로 처리됨
+
+## Final verification checklist (requires running DB + server)
+
+1. [ ] 회원가입 → DB approval_status='PENDING', is_active=false → 로그인 시 '승인 대기' 오류
+2. [ ] 관리자 승인 → DB APPROVED + is_active=true → 사용자 로그인 성공
+3. [ ] 거절 → 로그인 시 '거절' 오류
+4. [ ] 기존 사용자 — approval_status='APPROVED' 기본값, 로그인 정상
+5. [ ] 관리자 생성 사용자 — 즉시 활성 (APPROVED)
+6. [ ] 비관리자 사이드바 — '사용자 관리' 없음
+
+## Blocked / Notes
+- init.sh의 DB 연결 정보는 환경에 맞게 수정 필요 (# TODO 주석 참조)
+- 실제 DB에 migration 002 적용 후 final verification 가능

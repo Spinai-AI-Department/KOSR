@@ -80,6 +80,25 @@ function mapProfile(profile: BackendMyProfile): User {
   }
 }
 
+export interface SignupRequest {
+  login_id: string
+  password: string
+  password_confirm: string
+  full_name: string
+  email?: string
+  phone?: string
+  hospital_code?: string
+  role_code?: string
+  department?: string
+  specialty?: string
+  license_number?: string
+}
+
+export interface Hospital {
+  hospital_code: string
+  hospital_name: string
+}
+
 export interface UpdateProfileRequest {
   email?: string
   phone?: string
@@ -118,4 +137,10 @@ export const authService = {
 
   logout: (token: string) =>
     api.post<void>('/auth/logout', {}, token),
+
+  signup: (data: SignupRequest) =>
+    api.post<void>('/auth/signup', data),
+
+  getHospitals: () =>
+    api.get<Hospital[]>('/auth/hospitals'),
 }

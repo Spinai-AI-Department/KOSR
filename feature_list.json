@@ -1,0 +1,284 @@
+{
+  "project": "KSOR Admin User Approval System",
+  "features": [
+    {
+      "id": "DB-01",
+      "phase": 1,
+      "agent": "DB Agent",
+      "title": "auth.signup_status enum 타입 추가",
+      "status": "done",
+      "files_affected": ["server/database/ksor_schema.sql", "server/database/migrations/002_approval_status.sql"],
+      "acceptance_criteria": [
+        "auth.signup_status ENUM ('PENDING', 'APPROVED', 'REJECTED') 생성됨",
+        "IF NOT EXISTS 가드로 멱등성 보장"
+      ]
+    },
+    {
+      "id": "DB-02",
+      "phase": 1,
+      "agent": "DB Agent",
+      "title": "auth.user_account에 approval 관련 컬럼 추가",
+      "status": "done",
+      "files_affected": ["server/database/ksor_schema.sql", "server/database/migrations/002_approval_status.sql"],
+      "acceptance_criteria": [
+        "approval_status auth.signup_status NOT NULL DEFAULT 'APPROVED' 추가됨",
+        "approved_by uuid FK 추가됨",
+        "approved_at timestamptz 추가됨",
+        "rejection_reason text 추가됨",
+        "ADD COLUMN IF NOT EXISTS 사용으로 멱등성 보장"
+      ]
+    },
+    {
+      "id": "DB-03",
+      "phase": 1,
+      "agent": "DB Agent",
+      "title": "approval_status 부분 인덱스 추가",
+      "status": "done",
+      "files_affected": ["server/database/ksor_schema.sql", "server/database/migrations/002_approval_status.sql"],
+      "acceptance_criteria": [
+        "idx_user_account_approval_pending 인덱스 생성됨",
+        "WHERE approval_status = 'PENDING' AND deleted_at IS NULL 조건부 인덱스"
+      ]
+    },
+    {
+      "id": "DB-04",
+      "phase": 1,
+      "agent": "DB Agent",
+      "title": "auth.get_user_auth_snapshot() 함수에 approval_status 추가",
+      "status": "done",
+      "files_affected": ["server/database/ksor_schema.sql", "server/database/migrations/002_approval_status.sql"],
+      "acceptance_criteria": [
+        "RETURNS TABLE에 approval_status auth.signup_status 포함됨",
+        "SELECT 절에 ua.approval_status 포함됨"
+      ]
+    },
+    {
+      "id": "DB-05",
+      "phase": 1,
+      "agent": "DB Agent",
+      "title": "tg_guard_user_account_update 트리거에 approval_status 가드 추가",
+      "status": "done",
+      "files_affected": ["server/database/ksor_schema.sql", "server/database/migrations/002_approval_status.sql"],
+      "acceptance_criteria": [
+        "비관리자가 approval_status 변경 시 42501 에러 발생",
+        "에러 메시지에 '승인' 관련 내용 포함"
+      ]
+    },
+    {
+      "id": "DB-06",
+      "phase": 1,
+      "agent": "DB Agent",
+      "title": "회원가입 INSERT RLS 정책 추가",
+      "status": "done",
+      "files_affected": ["server/database/ksor_schema.sql", "server/database/migrations/002_approval_status.sql"],
+      "acceptance_criteria": [
+        "SYSTEM 컨텍스트로 approval_status='PENDING', is_active=false 조건 INSERT 허용",
+        "기존 admin INSERT 정책 유지"
+      ]
+    },
+    {
+      "id": "BE-01",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "SignupRequest 모델 추가",
+      "status": "done",
+      "files_affected": ["server/app/models/auth.py"],
+      "acceptance_criteria": [
+        "SignupRequest 필드: login_id, password, password_confirm, full_name, email, phone, hospital_code, role_code, department, specialty, license_number",
+        "Pydantic validation 포함"
+      ]
+    },
+    {
+      "id": "BE-02",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "AdminRejectUserRequest 모델 및 AdminUserItem approval_status 필드 추가",
+      "status": "done",
+      "files_affected": ["server/app/models/admin.py"],
+      "acceptance_criteria": [
+        "AdminRejectUserRequest 모델: reason Optional[str]",
+        "AdminUserItem에 approval_status: str 필드 추가"
+      ]
+    },
+    {
+      "id": "BE-03",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "signup() 서비스 함수 구현",
+      "status": "done",
+      "files_affected": ["server/app/services/auth_service.py"],
+      "acceptance_criteria": [
+        "비밀번호 확인 검증",
+        "login_id/email 중복 검사",
+        "is_active=false, approval_status='PENDING'으로 INSERT",
+        "get_db_auth(SYSTEM 컨텍스트) 사용"
+      ]
+    },
+    {
+      "id": "BE-04",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "login() 함수에 approval_status 체크 추가",
+      "status": "done",
+      "files_affected": ["server/app/services/auth_service.py"],
+      "acceptance_criteria": [
+        "PENDING → '회원가입 승인 대기 중입니다' (AUTH_PENDING_APPROVAL)",
+        "REJECTED → '회원가입이 거절되었습니다' (AUTH_SIGNUP_REJECTED)",
+        "is_active 체크보다 approval_status 체크 우선"
+      ]
+    },
+    {
+      "id": "BE-05",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "admin approval 서비스 함수 3개 구현",
+      "status": "done",
+      "files_affected": ["server/app/services/admin_service.py"],
+      "acceptance_criteria": [
+        "list_pending_users(): 페이지네이션 지원, PENDING 상태 사용자 목록",
+        "approve_user(): approval_status='APPROVED', is_active=true 업데이트",
+        "reject_user(): approval_status='REJECTED', rejection_reason 저장"
+      ]
+    },
+    {
+      "id": "BE-06",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "POST /auth/signup 엔드포인트 추가",
+      "status": "done",
+      "files_affected": ["server/app/api/routes/auth.py"],
+      "acceptance_criteria": [
+        "인증 불필요 (공개 엔드포인트)",
+        "get_db_auth 의존성 사용",
+        "성공 시 확인 메시지 반환"
+      ]
+    },
+    {
+      "id": "BE-07",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "GET /auth/hospitals 엔드포인트 추가",
+      "status": "done",
+      "files_affected": ["server/app/api/routes/auth.py"],
+      "acceptance_criteria": [
+        "인증 불필요 (공개 엔드포인트)",
+        "ref.hospital 테이블에서 is_active=true 병원 목록 반환",
+        "hospital_code, hospital_name 필드 포함"
+      ]
+    },
+    {
+      "id": "BE-08",
+      "phase": 2,
+      "agent": "Backend Agent",
+      "title": "admin approval 엔드포인트 3개 추가",
+      "status": "done",
+      "files_affected": ["server/app/api/routes/admin.py"],
+      "acceptance_criteria": [
+        "GET /admin/users/pending — 승인 대기 목록 (페이지네이션)",
+        "PUT /admin/users/{user_id}/approve — 승인",
+        "PUT /admin/users/{user_id}/reject — 거절 (reason 선택)"
+      ]
+    },
+    {
+      "id": "FE-01",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "admin API 서비스 모듈 생성",
+      "status": "done",
+      "files_affected": ["web/src/api/admin.ts", "web/src/api/index.ts"],
+      "acceptance_criteria": [
+        "listPendingUsers(), approveUser(), rejectUser(), listUsers() 함수 구현",
+        "index.ts에서 adminService re-export"
+      ]
+    },
+    {
+      "id": "FE-02",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "auth API에 signup, getHospitals 추가",
+      "status": "done",
+      "files_affected": ["web/src/api/auth.ts"],
+      "acceptance_criteria": [
+        "signup(data): POST /auth/signup 호출",
+        "getHospitals(): GET /auth/hospitals 호출"
+      ]
+    },
+    {
+      "id": "FE-03",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "SignupPage 구현",
+      "status": "done",
+      "files_affected": ["web/src/pages/SignupPage.tsx"],
+      "acceptance_criteria": [
+        "LoginPage와 동일한 two-panel 레이아웃",
+        "필드: 아이디, 비밀번호, 비밀번호 확인, 이름, 이메일, 전화번호, 소속 병원(드롭다운), 역할(PI/CRC), 진료과, 전문분야, 면허번호",
+        "성공 시 '관리자 승인 후 로그인할 수 있습니다' 메시지",
+        "shadcn/ui 컴포넌트 사용"
+      ]
+    },
+    {
+      "id": "FE-04",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "AdminUsersPage 구현",
+      "status": "done",
+      "files_affected": ["web/src/pages/admin/AdminUsersPage.tsx"],
+      "acceptance_criteria": [
+        "Tab1: '승인 대기' — PENDING 사용자 테이블, 승인/거절 버튼, 거절 사유 다이얼로그",
+        "Tab2: '전체 사용자' — 전체 목록, 페이지네이션, 상태 배지",
+        "shadcn Tabs, Table, Badge, Dialog, DropdownMenu 사용"
+      ]
+    },
+    {
+      "id": "FE-05",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "라우터에 /signup, /admin/users 경로 추가",
+      "status": "done",
+      "files_affected": ["web/src/router.tsx"],
+      "acceptance_criteria": [
+        "/signup — 공개 경로, SignupPage",
+        "/admin/users — 보호된 경로 (Layout 하위), AdminUsersPage"
+      ]
+    },
+    {
+      "id": "FE-06",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "Layout 사이드바에 역할 기반 '사용자 관리' 메뉴 추가",
+      "status": "done",
+      "files_affected": ["web/src/components/common/Layout.tsx"],
+      "acceptance_criteria": [
+        "ADMIN, STEERING 역할에만 '사용자 관리' 메뉴 표시",
+        "lucide-react Shield 또는 UserCog 아이콘 사용",
+        "경로: /admin/users"
+      ]
+    },
+    {
+      "id": "FE-07",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "LoginPage에 회원가입 링크 추가",
+      "status": "done",
+      "files_affected": ["web/src/pages/LoginPage.tsx"],
+      "acceptance_criteria": [
+        "'계정이 없으신가요? 회원가입' 링크가 로그인 폼 하단에 표시됨",
+        "/signup 으로 연결"
+      ]
+    },
+    {
+      "id": "FE-08",
+      "phase": 3,
+      "agent": "Frontend Agent",
+      "title": "로그인 에러 메시지 전파 확인",
+      "status": "done",
+      "files_affected": ["web/src/pages/LoginPage.tsx", "web/src/context/AuthContext.tsx"],
+      "acceptance_criteria": [
+        "AUTH_PENDING_APPROVAL 에러 코드 → '회원가입 승인 대기 중입니다' 메시지 표시",
+        "AUTH_SIGNUP_REJECTED 에러 코드 → '회원가입이 거절되었습니다' 메시지 표시",
+        "백엔드 error detail.message가 UI에 올바르게 전파됨"
+      ]
+    }
+  ]
+}

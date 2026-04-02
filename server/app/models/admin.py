@@ -33,6 +33,10 @@ class AdminResetPasswordRequest(APIModel):
     initial_password: str | None = Field(default=None, min_length=8, max_length=128)
 
 
+class AdminRejectUserRequest(APIModel):
+    reason: str | None = None
+
+
 class AdminUserItem(APIModel):
     user_id: UUID
     login_id: str
@@ -44,6 +48,7 @@ class AdminUserItem(APIModel):
     is_active: bool
     is_locked: bool
     is_first_login: bool
+    approval_status: str
     created_at: datetime
     last_login_at: datetime | None = None
 

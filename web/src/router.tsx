@@ -6,7 +6,9 @@ import { SurgeryAnalysis } from "@/pages/StatisticsPage";
 import { Reports } from "@/pages/ExportPage";
 import { SurgeryDataEntry } from "@/pages/PatientNewPage";
 import { LoginPage } from "@/pages/LoginPage";
+import { SignupPage } from "@/pages/SignupPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
 import SurveyWelcomePage from "@/pages/survey/WelcomePage";
 import SurveyQuestionsPage from "@/pages/survey/SurveyPage";
 import SurveyCompletePage from "@/pages/survey/CompletePage";
@@ -15,6 +17,10 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     Component: LoginPage,
+  },
+  {
+    path: "/signup",
+    Component: SignupPage,
   },
   // Patient survey routes (public, no auth required)
   {
@@ -39,6 +45,7 @@ export const router = createBrowserRouter([
       { path: "reports", Component: Reports },
       { path: "surgery-entry", Component: SurgeryDataEntry },
       { path: "profile", Component: ProfilePage },
+      { path: "admin/users", Component: AdminUsersPage },
     ],
   },
 ]);

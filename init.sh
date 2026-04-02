@@ -1,51 +1,40 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# KSOR Development Environment Init Script
 set -e
 
-echo "=== KSOR 개발 환경 초기화 ==="
+# TODO: confirm with team — adjust DB connection details for your environment
+DB_HOST="${PGHOST:-localhost}"
+DB_PORT="${PGPORT:-5432}"
+DB_NAME="${PGDATABASE:-ksor}"
+DB_USER="${PGUSER:-ksor_app}"
 
-# --- 프론트엔드 ---
-echo ""
-echo "[1/3] 프론트엔드 의존성 설치 (web/)"
-cd web
-npm install
+echo "=== KSOR Dev Environment Init ==="
 
-# .env.local이 없으면 기본값으로 생성
-if [ ! -f .env.local ]; then
-  echo "VITE_API_BASE_URL=http://localhost:8000" > .env.local
-  echo "  → web/.env.local 생성 (VITE_API_BASE_URL=http://localhost:8000)"
-fi
+# 1. Apply database schema
+echo "[1/3] Applying database schema..."
+# TODO: confirm with team — supply password via PGPASSWORD env var or .pgpass
+psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f server/database/ksor_schema.sql
 
-cd ..
-
-# --- 백엔드 ---
-echo ""
-echo "[2/3] 백엔드 의존성 설치 (server/)"
+# 2. Start FastAPI backend (background)
+echo "[2/3] Starting FastAPI backend..."
 cd server
-
-if [ ! -f .env ]; then
-  if [ -f .env.example ]; then
-    cp .env.example .env
-    echo "  → server/.env.example → server/.env 복사. 값을 실제 환경에 맞게 수정하세요."
-  else
-    echo "  ⚠️  server/.env.example이 없습니다. 수동으로 server/.env를 생성하세요."
-  fi
-fi
-
-pip install -r requirements.txt
-
+# TODO: confirm with team — ensure venv is activated or adjust python path
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
+BACKEND_PID=$!
+echo "Backend PID: $BACKEND_PID"
 cd ..
 
-# --- 안내 ---
+# 3. Start Vite frontend (background)
+echo "[3/3] Starting Vite frontend..."
+cd web
+npm run dev &
+FRONTEND_PID=$!
+echo "Frontend PID: $FRONTEND_PID"
+cd ..
+
 echo ""
-echo "[3/3] 실행 명령 안내"
+echo "=== Dev servers started ==="
+echo "Backend:  http://localhost:8000"
+echo "Frontend: http://localhost:5173"
 echo ""
-echo "  프론트엔드 개발 서버:"
-echo "    cd web && npm run dev"
-echo ""
-echo "  백엔드 서버:"
-echo "    cd server && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
-echo ""
-echo "  AlimTalk 아웃박스 워커 (별도 터미널):"
-echo "    cd server && python -m app.workers.outbox_dispatcher"
-echo ""
-echo "=== 초기화 완료 ==="
+echo "To stop: kill $BACKEND_PID $FRONTEND_PID"

@@ -8,6 +8,20 @@ from pydantic import EmailStr, Field, SecretStr
 from app.models.common import APIModel
 
 
+class SignupRequest(APIModel):
+    login_id: str = Field(min_length=3, max_length=100)
+    password: SecretStr = Field(min_length=8, max_length=128)
+    password_confirm: SecretStr = Field(min_length=8, max_length=128)
+    full_name: str = Field(min_length=2, max_length=100)
+    email: EmailStr | None = None
+    phone: str | None = Field(default=None, max_length=30)
+    hospital_code: str | None = Field(default=None, max_length=20)
+    role_code: str = Field(default="PI")
+    department: str | None = Field(default=None, max_length=100)
+    specialty: str | None = Field(default=None, max_length=100)
+    license_number: str | None = Field(default=None, max_length=50)
+
+
 class LoginRequest(APIModel):
     login_id: str = Field(min_length=3, max_length=100)
     password: SecretStr = Field(min_length=8, max_length=128)

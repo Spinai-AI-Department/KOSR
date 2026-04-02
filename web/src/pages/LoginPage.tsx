@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import logoImage from "@/assets/logo.png";
@@ -167,8 +167,14 @@ export function LoginPage() {
             </button>
           </form>
 
+          {/* Signup Link */}
+          <p className="mt-4 text-center text-sm text-gray-500">
+            계정이 없으신가요?{" "}
+            <Link to="/signup" className="text-gray-900 underline">회원가입</Link>
+          </p>
+
           {/* Demo Account */}
-          <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+          <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
             <p className="text-xs text-gray-500 mb-3">데모 계정으로 빠르게 접속하기</p>
             <div className="flex gap-2">
               <button

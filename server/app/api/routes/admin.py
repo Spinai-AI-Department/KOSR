@@ -6,10 +6,35 @@ from fastapi import APIRouter, Depends, Query
 
 from app.api.deps import AuthenticatedContext, require_admin
 from app.core.responses import success
-from app.models.admin import AdminResetPasswordRequest, AdminUserCreateRequest, AdminUserUpdateRequest
+from app.models.admin import AdminRejectUserRequest, AdminResetPasswordRequest, AdminUserCreateRequest, AdminUserUpdateRequest
 from app.services import admin_service
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+@router.get("/users/pending")
+async def list_pending_users(
+    page: int = Query(1, ge=1),
+    size: int = Query(20, ge=1, le=100),
+    ctx: AuthenticatedContext = Depends(require_admin),
+):
+    """List users awaiting approval (paginated)."""
+    data = await admin_service.list_pending_users(ctx.conn, page=page, size=size)
+    return success("승인 대기 사용자 목록 조회가 완료되었습니다.", data.model_dump())
+
+
+@router.put("/users/{user_id}/approve")
+async def approve_user(user_id: UUID, ctx: AuthenticatedContext = Depends(require_admin)):
+    """Approve a pending user — sets approval_status=APPROVED and is_active=true."""
+    data = await admin_service.approve_user(ctx.conn, user_id, ctx.principal.sub)
+    return success("사용자가 승인되었습니다.", data)
+
+
+@router.put("/users/{user_id}/reject")
+async def reject_user(user_id: UUID, payload: AdminRejectUserRequest, ctx: AuthenticatedContext = Depends(require_admin)):
+    """Reject a pending user — sets approval_status=REJECTED with optional reason."""
+    data = await admin_service.reject_user(ctx.conn, user_id, ctx.principal.sub, reason=payload.reason)
+    return success("사용자가 거절되었습니다.", data)
 
 
 @router.get("/users")

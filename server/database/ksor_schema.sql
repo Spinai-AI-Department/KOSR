@@ -153,6 +153,15 @@ BEGIN
     ) THEN
         CREATE TYPE auth.reset_channel AS ENUM ('EMAIL', 'ALIMTALK', 'ADMIN');
     END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type t
+        JOIN pg_namespace n ON n.oid = t.typnamespace
+        WHERE n.nspname = 'auth' AND t.typname = 'signup_status'
+    ) THEN
+        CREATE TYPE auth.signup_status AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
+    END IF;
 END
 $$;
 
@@ -663,6 +672,20 @@ CREATE TABLE IF NOT EXISTS auth.user_account (
         )
 );
 
+-- Approval system columns (idempotent via ADD COLUMN IF NOT EXISTS)
+DO $$
+BEGIN
+    ALTER TABLE auth.user_account
+        ADD COLUMN IF NOT EXISTS approval_status  auth.signup_status NOT NULL DEFAULT 'APPROVED',
+        ADD COLUMN IF NOT EXISTS approved_by      uuid REFERENCES auth.user_account(user_id),
+        ADD COLUMN IF NOT EXISTS approved_at      timestamptz,
+        ADD COLUMN IF NOT EXISTS rejection_reason text;
+EXCEPTION WHEN OTHERS THEN
+    -- Column may already exist with different type on older DBs; skip
+    NULL;
+END;
+$$;
+
 CREATE UNIQUE INDEX IF NOT EXISTS uq_user_account_login_id_ci
     ON auth.user_account (lower(login_id));
 
@@ -675,6 +698,10 @@ CREATE INDEX IF NOT EXISTS idx_user_account_hospital_role
 
 CREATE INDEX IF NOT EXISTS idx_user_account_active
     ON auth.user_account (is_active, is_locked);
+
+CREATE INDEX IF NOT EXISTS idx_user_account_approval_pending
+    ON auth.user_account (approval_status, created_at DESC)
+    WHERE approval_status = 'PENDING' AND deleted_at IS NULL;
 
 CREATE TABLE IF NOT EXISTS auth.user_password_history (
     password_history_id        uuid PRIMARY KEY DEFAULT app_private.gen_uuid_pk(),
@@ -791,10 +818,10 @@ BEGIN
         RAISE EXCEPTION USING ERRCODE = '42501', MESSAGE = '본인 계정만 수정할 수 있습니다.';
     END IF;
 
-    IF (NEW.role_code, NEW.hospital_code, NEW.login_id, NEW.is_active, NEW.is_locked, NEW.deleted_at)
+    IF (NEW.role_code, NEW.hospital_code, NEW.login_id, NEW.is_active, NEW.is_locked, NEW.deleted_at, NEW.approval_status)
        IS DISTINCT FROM
-       (OLD.role_code, OLD.hospital_code, OLD.login_id, OLD.is_active, OLD.is_locked, OLD.deleted_at) THEN
-        RAISE EXCEPTION USING ERRCODE = '42501', MESSAGE = '권한/소속/잠금/삭제 상태는 관리자만 변경할 수 있습니다.';
+       (OLD.role_code, OLD.hospital_code, OLD.login_id, OLD.is_active, OLD.is_locked, OLD.deleted_at, OLD.approval_status) THEN
+        RAISE EXCEPTION USING ERRCODE = '42501', MESSAGE = '권한/소속/잠금/삭제/승인 상태는 관리자만 변경할 수 있습니다.';
     END IF;
 
     RETURN NEW;
@@ -815,7 +842,8 @@ RETURNS TABLE (
     is_active                 boolean,
     is_locked                 boolean,
     failed_login_count        integer,
-    last_password_changed_at  timestamptz
+    last_password_changed_at  timestamptz,
+    approval_status           auth.signup_status
 )
 LANGUAGE sql
 SECURITY DEFINER
@@ -833,7 +861,8 @@ AS $$
            ua.is_active,
            ua.is_locked,
            ua.failed_login_count,
-           ua.last_password_changed_at
+           ua.last_password_changed_at,
+           ua.approval_status
       FROM auth.user_account ua
      WHERE lower(ua.login_id) = lower(p_login_id)
        AND ua.deleted_at IS NULL
@@ -2560,6 +2589,16 @@ CREATE POLICY p_user_account_insert_admin
     ON auth.user_account
     FOR INSERT
     WITH CHECK (app_private.is_admin());
+
+DROP POLICY IF EXISTS p_user_account_insert_signup ON auth.user_account;
+CREATE POLICY p_user_account_insert_signup
+    ON auth.user_account
+    FOR INSERT
+    WITH CHECK (
+        current_setting('app.role', true) = 'SYSTEM'
+        AND approval_status = 'PENDING'
+        AND is_active = false
+    );
 
 DROP POLICY IF EXISTS p_user_account_delete_admin ON auth.user_account;
 CREATE POLICY p_user_account_delete_admin

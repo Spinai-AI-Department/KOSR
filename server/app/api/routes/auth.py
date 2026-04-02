@@ -5,10 +5,29 @@ from fastapi import APIRouter, Depends
 from app.api.deps import AuthenticatedContext, require_auth
 from app.core.responses import success
 from app.db.session import get_db, get_db_auth
-from app.models.auth import ChangePasswordRequest, LoginRequest, RefreshTokenRequest, ResetPasswordRequest, UpdateMyInfoRequest
+from app.models.auth import ChangePasswordRequest, LoginRequest, RefreshTokenRequest, ResetPasswordRequest, SignupRequest, UpdateMyInfoRequest
 from app.services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post("/signup")
+async def signup(payload: SignupRequest, conn=Depends(get_db_auth)):
+    """Public signup — creates user with approval_status=PENDING awaiting admin review."""
+    await auth_service.signup(conn, payload)
+    return success("회원가입 신청이 완료되었습니다. 관리자 승인 후 로그인할 수 있습니다.", None)
+
+
+@router.get("/hospitals")
+async def list_hospitals(conn=Depends(get_db_auth)):
+    """Public endpoint — returns active hospital list for signup dropdown."""
+    from app.db.queries import fetch_all
+    rows = await fetch_all(
+        conn,
+        "SELECT hospital_code, hospital_name FROM ref.hospital WHERE is_active = true ORDER BY hospital_name",
+        [],
+    )
+    return success("병원 목록 조회가 완료되었습니다.", rows)
 
 
 @router.post("/login")

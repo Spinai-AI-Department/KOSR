@@ -7,7 +7,7 @@ from psycopg import AsyncConnection
 from app.core.exceptions import NotFoundError, ValidationError
 from app.core.security import generate_temporary_password, password_manager
 from app.db.queries import execute, fetch_all, fetch_one, fetch_val
-from app.models.admin import AdminUserCreateRequest, AdminUserListResponse, AdminUserUpdateRequest
+from app.models.admin import AdminUserCreateRequest, AdminUserListResponse, AdminUserUpdateRequest, AdminRejectUserRequest
 from app.models.common import PaginationMeta
 from app.services.sql_utils import build_set_clause
 
@@ -44,7 +44,8 @@ async def list_users(
         conn,
         f"""
         SELECT user_id, login_id, full_name, hospital_code, role_code::text AS role_code,
-               email, phone, is_active, is_locked, is_first_login, created_at, last_login_at
+               email, phone, is_active, is_locked, is_first_login,
+               approval_status::text AS approval_status, created_at, last_login_at
         FROM auth.user_account
         WHERE {where_sql}
         ORDER BY created_at DESC
@@ -157,6 +158,91 @@ async def reset_user_password(conn: AsyncConnection, user_id, initial_password: 
     if not row:
         raise NotFoundError(message="사용자를 찾을 수 없습니다.", error_code="USER_NOT_FOUND")
     return {**row, "initial_password": temp_password}
+
+
+async def list_pending_users(
+    conn: AsyncConnection,
+    *,
+    page: int = 1,
+    size: int = 20,
+) -> AdminUserListResponse:
+    """Return paginated list of users awaiting approval."""
+    total = int(
+        await fetch_val(
+            conn,
+            "SELECT count(*) FROM auth.user_account WHERE approval_status = 'PENDING' AND deleted_at IS NULL",
+            [],
+            default=0,
+        )
+    )
+    offset = max(page - 1, 0) * size
+    rows = await fetch_all(
+        conn,
+        """
+        SELECT user_id, login_id, full_name, hospital_code, role_code::text AS role_code,
+               email, phone, is_active, is_locked, is_first_login,
+               approval_status::text AS approval_status, created_at, last_login_at
+        FROM auth.user_account
+        WHERE approval_status = 'PENDING' AND deleted_at IS NULL
+        ORDER BY created_at ASC
+        LIMIT %s OFFSET %s
+        """,
+        [size, offset],
+    )
+    total_pages = max((total + size - 1) // size, 1)
+    return AdminUserListResponse(
+        pagination=PaginationMeta(
+            current_page=page,
+            total_pages=total_pages,
+            total_elements=total,
+            page_size=size,
+        ),
+        items=rows,
+    )
+
+
+async def approve_user(conn: AsyncConnection, user_id, approver_id) -> dict[str, Any]:
+    """Approve a pending user: set approval_status=APPROVED, is_active=true."""
+    row = await fetch_one(
+        conn,
+        """
+        UPDATE auth.user_account
+           SET approval_status = 'APPROVED',
+               is_active = true,
+               approved_by = %s,
+               approved_at = now(),
+               updated_at = now()
+         WHERE user_id = %s
+           AND deleted_at IS NULL
+     RETURNING user_id, login_id, full_name, approval_status::text AS approval_status
+        """,
+        (str(approver_id), str(user_id)),
+    )
+    if not row:
+        raise NotFoundError(message="사용자를 찾을 수 없습니다.", error_code="USER_NOT_FOUND")
+    return row
+
+
+async def reject_user(conn: AsyncConnection, user_id, approver_id, *, reason: str | None = None) -> dict[str, Any]:
+    """Reject a pending user: set approval_status=REJECTED with optional reason."""
+    row = await fetch_one(
+        conn,
+        """
+        UPDATE auth.user_account
+           SET approval_status = 'REJECTED',
+               approved_by = %s,
+               approved_at = now(),
+               rejection_reason = %s,
+               updated_at = now()
+         WHERE user_id = %s
+           AND deleted_at IS NULL
+     RETURNING user_id, login_id, full_name, approval_status::text AS approval_status
+        """,
+        (str(approver_id), reason, str(user_id)),
+    )
+    if not row:
+        raise NotFoundError(message="사용자를 찾을 수 없습니다.", error_code="USER_NOT_FOUND")
+    return row
 
 
 async def deactivate_user(conn: AsyncConnection, user_id) -> None:
