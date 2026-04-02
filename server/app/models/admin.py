@@ -56,3 +56,15 @@ class AdminUserItem(APIModel):
 class AdminUserListResponse(APIModel):
     pagination: PaginationMeta
     items: list[AdminUserItem]
+
+
+class ApprovalLogItem(APIModel):
+    action: str          # 가입 신청 | 승인 | 거절
+    user_id: UUID
+    login_id: str
+    full_name: str
+    hospital_code: str | None = None
+    role_code: str
+    acted_at: datetime
+    actor_name: str | None = None   # 승인/거절한 관리자 이름
+    rejection_reason: str | None = None

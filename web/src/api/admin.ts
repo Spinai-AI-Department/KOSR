@@ -30,6 +30,28 @@ export interface RejectUserRequest {
   reason?: string
 }
 
+export interface ApprovalLogItem {
+  action: string
+  user_id: string
+  login_id: string
+  full_name: string
+  hospital_code: string | null
+  role_code: string
+  acted_at: string
+  actor_name: string | null
+  rejection_reason: string | null
+}
+
+export interface ApprovalLogResponse {
+  pagination: {
+    current_page: number
+    total_pages: number
+    total_elements: number
+    page_size: number
+  }
+  items: ApprovalLogItem[]
+}
+
 export const adminService = {
   listPendingUsers: (token: string, page = 1, size = 20): Promise<AdminUserListResponse> =>
     api.get<AdminUserListResponse>(`/admin/users/pending?page=${page}&size=${size}`, token),
@@ -45,4 +67,13 @@ export const adminService = {
     if (keyword) params.set('keyword', keyword)
     return api.get<AdminUserListResponse>(`/admin/users?${params}`, token)
   },
+
+  activateUser: (userId: string, token: string): Promise<unknown> =>
+    api.put<unknown>(`/admin/users/${userId}/activate`, {}, token),
+
+  suspendUser: (userId: string, token: string): Promise<unknown> =>
+    api.put<unknown>(`/admin/users/${userId}/suspend`, {}, token),
+
+  listLogs: (token: string, page = 1, size = 50): Promise<ApprovalLogResponse> =>
+    api.get<ApprovalLogResponse>(`/admin/logs?page=${page}&size=${size}`, token),
 }

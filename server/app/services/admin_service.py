@@ -254,3 +254,102 @@ async def deactivate_user(conn: AsyncConnection, user_id) -> None:
     )
     if count == 0:
         raise NotFoundError(message="사용자를 찾을 수 없습니다.", error_code="USER_NOT_FOUND")
+
+
+async def toggle_user_active(conn: AsyncConnection, user_id, *, activate: bool) -> dict[str, Any]:
+    """Suspend (is_active=false) or activate (is_active=true) an approved user."""
+    row = await fetch_one(
+        conn,
+        """
+        UPDATE auth.user_account
+           SET is_active = %s,
+               updated_at = now()
+         WHERE user_id = %s
+     RETURNING user_id, login_id, full_name, is_active
+        """,
+        (activate, str(user_id)),
+    )
+    if not row:
+        raise NotFoundError(message="사용자를 찾을 수 없습니다.", error_code="USER_NOT_FOUND")
+    return row
+
+
+async def list_approval_logs(
+    conn: AsyncConnection,
+    *,
+    page: int = 1,
+    size: int = 50,
+) -> dict[str, Any]:
+    """Return paginated approval log: signup, approval, and rejection events."""
+    offset = max(page - 1, 0) * size
+
+    total = int(
+        await fetch_val(
+            conn,
+            """
+            SELECT count(*) FROM (
+                SELECT user_id FROM auth.user_account
+                UNION ALL
+                SELECT user_id FROM auth.user_account WHERE approval_status IN ('APPROVED', 'REJECTED') AND approved_at IS NOT NULL
+            ) sub
+            """,
+            [],
+            default=0,
+        )
+    )
+
+    rows = await fetch_all(
+        conn,
+        """
+        SELECT action, user_id, login_id, full_name, hospital_code, role_code, acted_at, actor_name, rejection_reason
+        FROM (
+            -- 가입 신청 이벤트
+            SELECT
+                '가입 신청'::text AS action,
+                u.user_id,
+                u.login_id,
+                u.full_name,
+                u.hospital_code,
+                u.role_code::text AS role_code,
+                u.created_at AS acted_at,
+                NULL::text AS actor_name,
+                NULL::text AS rejection_reason
+            FROM auth.user_account u
+
+            UNION ALL
+
+            -- 승인/거절 이벤트
+            SELECT
+                CASE u.approval_status
+                    WHEN 'APPROVED' THEN '승인'
+                    WHEN 'REJECTED' THEN '거절'
+                END::text AS action,
+                u.user_id,
+                u.login_id,
+                u.full_name,
+                u.hospital_code,
+                u.role_code::text AS role_code,
+                u.approved_at AS acted_at,
+                a.full_name AS actor_name,
+                u.rejection_reason
+            FROM auth.user_account u
+            LEFT JOIN auth.user_account a ON a.user_id::text = u.approved_by
+            WHERE u.approval_status IN ('APPROVED', 'REJECTED')
+              AND u.approved_at IS NOT NULL
+        ) events
+        ORDER BY acted_at DESC
+        LIMIT %s OFFSET %s
+        """,
+        [size, offset],
+    )
+
+    total_pages = max((total + size - 1) // size, 1)
+    return {
+        "pagination": {
+            "current_page": page,
+            "total_pages": total_pages,
+            "total_elements": total,
+            "page_size": size,
+        },
+        "items": rows,
+    }

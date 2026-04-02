@@ -67,6 +67,31 @@ async def reset_user_password(user_id: UUID, payload: AdminResetPasswordRequest,
     return success("임시 비밀번호가 재설정되었습니다.", data)
 
 
+@router.put("/users/{user_id}/activate")
+async def activate_user(user_id: UUID, ctx: AuthenticatedContext = Depends(require_admin)):
+    """Activate a suspended user account."""
+    data = await admin_service.toggle_user_active(ctx.conn, user_id, activate=True)
+    return success("사용자 계정이 활성화되었습니다.", data)
+
+
+@router.put("/users/{user_id}/suspend")
+async def suspend_user(user_id: UUID, ctx: AuthenticatedContext = Depends(require_admin)):
+    """Suspend an active user account."""
+    data = await admin_service.toggle_user_active(ctx.conn, user_id, activate=False)
+    return success("사용자 계정이 정지되었습니다.", data)
+
+
+@router.get("/logs")
+async def list_approval_logs(
+    page: int = Query(1, ge=1),
+    size: int = Query(50, ge=1, le=200),
+    ctx: AuthenticatedContext = Depends(require_admin),
+):
+    """List approval log events (signup, approve, reject)."""
+    data = await admin_service.list_approval_logs(ctx.conn, page=page, size=size)
+    return success("승인 로그 조회가 완료되었습니다.", data)
+
+
 @router.delete("/users/{user_id}")
 async def delete_user(user_id: UUID, ctx: AuthenticatedContext = Depends(require_admin)):
     await admin_service.deactivate_user(ctx.conn, user_id)

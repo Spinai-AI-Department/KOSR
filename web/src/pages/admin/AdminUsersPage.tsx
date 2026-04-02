@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, PauseCircle, PlayCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { adminService } from "@/api/admin";
-import type { PendingUser, AdminUserListResponse } from "@/api/admin";
+import type { PendingUser, AdminUserListResponse, ApprovalLogItem, ApprovalLogResponse } from "@/api/admin";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,22 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
-function statusBadge(status: string) {
+function statusBadge(status: string, isActive: boolean) {
   if (status === "PENDING") return <Badge variant="outline" className="text-yellow-600 border-yellow-400">승인 대기</Badge>;
-  if (status === "APPROVED") return <Badge variant="outline" className="text-green-600 border-green-400">승인됨</Badge>;
   if (status === "REJECTED") return <Badge variant="outline" className="text-red-600 border-red-400">거절됨</Badge>;
+  if (status === "APPROVED") {
+    return isActive
+      ? <Badge variant="outline" className="text-green-600 border-green-400">활성</Badge>
+      : <Badge variant="outline" className="text-gray-500 border-gray-300">정지</Badge>;
+  }
   return <Badge variant="outline">{status}</Badge>;
+}
+
+function actionBadge(action: string) {
+  if (action === "가입 신청") return <Badge variant="outline" className="text-blue-600 border-blue-300">가입 신청</Badge>;
+  if (action === "승인") return <Badge variant="outline" className="text-green-600 border-green-400">승인</Badge>;
+  if (action === "거절") return <Badge variant="outline" className="text-red-600 border-red-400">거절</Badge>;
+  return <Badge variant="outline">{action}</Badge>;
 }
 
 function roleLabel(role: string) {
@@ -72,13 +83,16 @@ export function AdminUsersPage() {
   const { token } = useAuth();
   const [pendingData, setPendingData] = useState<AdminUserListResponse | null>(null);
   const [allData, setAllData] = useState<AdminUserListResponse | null>(null);
+  const [logData, setLogData] = useState<ApprovalLogResponse | null>(null);
   const [pendingLoading, setPendingLoading] = useState(false);
   const [allLoading, setAllLoading] = useState(false);
+  const [logLoading, setLogLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [rejectTarget, setRejectTarget] = useState<PendingUser | null>(null);
   const [error, setError] = useState("");
   const [pendingPage, setPendingPage] = useState(1);
   const [allPage, setAllPage] = useState(1);
+  const [logPage, setLogPage] = useState(1);
 
   const fetchPending = useCallback(() => {
     if (!token) return;
@@ -98,8 +112,18 @@ export function AdminUsersPage() {
       .finally(() => setAllLoading(false));
   }, [token, allPage]);
 
+  const fetchLogs = useCallback(() => {
+    if (!token) return;
+    setLogLoading(true);
+    adminService.listLogs(token, logPage)
+      .then(setLogData)
+      .catch((err) => setError(err instanceof Error ? err.message : "오류가 발생했습니다."))
+      .finally(() => setLogLoading(false));
+  }, [token, logPage]);
+
   useEffect(() => { fetchPending(); }, [fetchPending]);
   useEffect(() => { fetchAll(); }, [fetchAll]);
+  useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   const handleApprove = async (user: PendingUser) => {
     if (!token) return;
@@ -109,6 +133,7 @@ export function AdminUsersPage() {
       await adminService.approveUser(user.user_id, token);
       fetchPending();
       fetchAll();
+      fetchLogs();
     } catch (err) {
       setError(err instanceof Error ? err.message : "승인에 실패했습니다.");
     } finally {
@@ -125,8 +150,27 @@ export function AdminUsersPage() {
       setRejectTarget(null);
       fetchPending();
       fetchAll();
+      fetchLogs();
     } catch (err) {
       setError(err instanceof Error ? err.message : "거절에 실패했습니다.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleToggleActive = async (user: PendingUser) => {
+    if (!token) return;
+    setActionLoading(user.user_id);
+    setError("");
+    try {
+      if (user.is_active) {
+        await adminService.suspendUser(user.user_id, token);
+      } else {
+        await adminService.activateUser(user.user_id, token);
+      }
+      fetchAll();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "상태 변경에 실패했습니다.");
     } finally {
       setActionLoading(null);
     }
@@ -164,6 +208,7 @@ export function AdminUsersPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="all">전체 사용자</TabsTrigger>
+          <TabsTrigger value="logs">로그</TabsTrigger>
         </TabsList>
 
         {/* Tab 1: Pending Users */}
@@ -257,6 +302,7 @@ export function AdminUsersPage() {
                     <th className="px-4 py-3 text-left font-medium">상태</th>
                     <th className="px-4 py-3 text-left font-medium">가입일</th>
                     <th className="px-4 py-3 text-left font-medium">마지막 로그인</th>
+                    <th className="px-4 py-3 text-left font-medium">작업</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -266,12 +312,34 @@ export function AdminUsersPage() {
                       <td className="px-4 py-3 text-gray-600">{user.login_id}</td>
                       <td className="px-4 py-3">{roleLabel(user.role_code)}</td>
                       <td className="px-4 py-3 text-gray-600">{user.hospital_code ?? "—"}</td>
-                      <td className="px-4 py-3">{statusBadge(user.approval_status)}</td>
+                      <td className="px-4 py-3">{statusBadge(user.approval_status, user.is_active)}</td>
                       <td className="px-4 py-3 text-gray-500">
                         {new Date(user.created_at).toLocaleDateString("ko-KR")}
                       </td>
                       <td className="px-4 py-3 text-gray-500">
                         {user.last_login_at ? new Date(user.last_login_at).toLocaleDateString("ko-KR") : "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {user.approval_status === "APPROVED" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className={user.is_active
+                              ? "text-orange-700 border-orange-300 hover:bg-orange-50"
+                              : "text-green-700 border-green-300 hover:bg-green-50"
+                            }
+                            onClick={() => handleToggleActive(user)}
+                            disabled={actionLoading === user.user_id}
+                          >
+                            {actionLoading === user.user_id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : user.is_active ? (
+                              <><PauseCircle className="w-3 h-3 mr-1" />정지</>
+                            ) : (
+                              <><PlayCircle className="w-3 h-3 mr-1" />활성화</>
+                            )}
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -287,6 +355,58 @@ export function AdminUsersPage() {
                 {allPage} / {allData.pagination.total_pages}
               </span>
               <Button variant="outline" size="sm" disabled={allPage >= allData.pagination.total_pages} onClick={() => setAllPage((p) => p + 1)}>다음</Button>
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Tab 3: Approval Logs */}
+        <TabsContent value="logs">
+          {logLoading ? (
+            <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-gray-400" /></div>
+          ) : !logData || logData.items.length === 0 ? (
+            <div className="py-16 text-center text-gray-400 text-sm">로그가 없습니다.</div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-gray-200">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-medium">구분</th>
+                    <th className="px-4 py-3 text-left font-medium">이름</th>
+                    <th className="px-4 py-3 text-left font-medium">아이디</th>
+                    <th className="px-4 py-3 text-left font-medium">역할</th>
+                    <th className="px-4 py-3 text-left font-medium">병원</th>
+                    <th className="px-4 py-3 text-left font-medium">처리자</th>
+                    <th className="px-4 py-3 text-left font-medium">거절 사유</th>
+                    <th className="px-4 py-3 text-left font-medium">일시</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {logData.items.map((log: ApprovalLogItem, idx: number) => (
+                    <tr key={`${log.user_id}-${log.action}-${idx}`} className="bg-white hover:bg-gray-50">
+                      <td className="px-4 py-3">{actionBadge(log.action)}</td>
+                      <td className="px-4 py-3 font-medium text-gray-900">{log.full_name}</td>
+                      <td className="px-4 py-3 text-gray-600">{log.login_id}</td>
+                      <td className="px-4 py-3 text-gray-600">{roleLabel(log.role_code)}</td>
+                      <td className="px-4 py-3 text-gray-600">{log.hospital_code ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-600">{log.actor_name ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500 max-w-xs truncate">{log.rejection_reason ?? "—"}</td>
+                      <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                        {new Date(log.acted_at).toLocaleString("ko-KR", { dateStyle: "short", timeStyle: "short" })}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {logData && logData.pagination.total_pages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <Button variant="outline" size="sm" disabled={logPage <= 1} onClick={() => setLogPage((p) => p - 1)}>이전</Button>
+              <span className="flex items-center text-sm text-gray-600">
+                {logPage} / {logData.pagination.total_pages}
+              </span>
+              <Button variant="outline" size="sm" disabled={logPage >= logData.pagination.total_pages} onClick={() => setLogPage((p) => p + 1)}>다음</Button>
             </div>
           )}
         </TabsContent>
