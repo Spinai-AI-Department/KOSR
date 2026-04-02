@@ -437,11 +437,8 @@ function PatientListTab({ cache, onCacheUpdate }: {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-6 overflow-hidden relative">
         {/* Loading Spinner Overlay */}
         {listLoading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
-            <svg className="animate-spin h-8 w-8 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 backdrop-blur-[1px]">
+            <div className="h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
           </div>
         )}
         <div className="overflow-x-auto">
@@ -533,7 +530,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
+              {filtered.length === 0 && !listLoading && (
                 <tr>
                   <td colSpan={14} className="px-5 py-10 text-center text-sm text-gray-400">
                     검색 결과가 없습니다.
