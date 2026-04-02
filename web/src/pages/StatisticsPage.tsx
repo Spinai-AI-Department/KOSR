@@ -146,48 +146,34 @@ export function SurgeryAnalysis() {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="p-6 bg-white flex items-center justify-center min-h-[100px]">
-              <div className="h-8 w-8 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
-            </Card>
-          ))
-        ) : (
-          <>
-            <Card className="p-6 bg-white">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600">평균 VAS 개선도</div>
-                <TrendingUp className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="text-xl md:text-3xl mb-1">{keyMetrics.avgVasImprovement.toFixed(1)}%</div>
-              <div className="text-xs text-gray-500">환자 {keyMetrics.totalPatients}명 기준</div>
-            </Card>
-            <Card className="p-6 bg-white">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600">평균 ODI 개선도</div>
-                <TrendingUp className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="text-xl md:text-3xl mb-1">{keyMetrics.avgOdiImprovement.toFixed(1)}%</div>
-              <div className="text-xs text-gray-500">환자 {keyMetrics.totalPatients}명 기준</div>
-            </Card>
-            <Card className="p-6 bg-white">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600">환자 만족도</div>
-                <Activity className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="text-xl md:text-3xl mb-1">{keyMetrics.satisfactionRate.toFixed(1)}%</div>
-              <div className="text-xs text-gray-500">{keyMetrics.totalSatisfaction}명 중 {keyMetrics.satisfiedCount}명</div>
-            </Card>
-            <Card className="p-6 bg-white">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-sm text-gray-600">합병증율</div>
-                <TrendingDown className="w-5 h-5 text-red-600" />
-              </div>
-              <div className="text-xl md:text-3xl mb-1">{keyMetrics.reoperationRate.toFixed(1)}%</div>
-              <div className="text-xs text-gray-500">{keyMetrics.totalPatients}명 중 {keyMetrics.reoperationCount}명</div>
-            </Card>
-          </>
-        )}
+        <Card className="p-6 bg-white">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-gray-600">평균 VAS 개선도</div>
+            <TrendingUp className="w-5 h-5 text-green-600" />
+          </div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.avgVasImprovement.toFixed(1)}%</div><div className="text-xs text-gray-500">환자 {keyMetrics.totalPatients}명 기준</div></>}
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-gray-600">평균 ODI 개선도</div>
+            <TrendingUp className="w-5 h-5 text-green-600" />
+          </div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.avgOdiImprovement.toFixed(1)}%</div><div className="text-xs text-gray-500">환자 {keyMetrics.totalPatients}명 기준</div></>}
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-gray-600">환자 만족도</div>
+            <Activity className="w-5 h-5 text-blue-600" />
+          </div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.satisfactionRate.toFixed(1)}%</div><div className="text-xs text-gray-500">{keyMetrics.totalSatisfaction}명 중 {keyMetrics.satisfiedCount}명</div></>}
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-gray-600">합병증율</div>
+            <TrendingDown className="w-5 h-5 text-red-600" />
+          </div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <><div className="text-xl md:text-3xl mb-1">{keyMetrics.reoperationRate.toFixed(1)}%</div><div className="text-xs text-gray-500">{keyMetrics.totalPatients}명 중 {keyMetrics.reoperationCount}명</div></>}
+        </Card>
       </div>
 
       {/* Charts Row 1 */}

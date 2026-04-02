@@ -48,32 +48,22 @@ export function Dashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 md:mb-8">
-        {loading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="p-6 bg-white flex items-center justify-center min-h-[88px]">
-              <div className="h-8 w-8 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
-            </Card>
-          ))
-        ) : (
-          <>
-            <Card className="p-6 bg-white">
-              <div className="text-sm text-gray-600 mb-2">총 수술 건수</div>
-              <div className="text-2xl md:text-4xl">{stats.total_surgeries}</div>
-            </Card>
-            <Card className="p-6 bg-white">
-              <div className="text-sm text-gray-600 mb-2">이번 달 수술</div>
-              <div className="text-2xl md:text-4xl">{stats.monthly_surgeries}</div>
-            </Card>
-            <Card className="p-6 bg-white">
-              <div className="text-sm text-gray-600 mb-2">PROM 대기 건수</div>
-              <div className="text-2xl md:text-4xl">{`${stats.prom_pending_cases} 건`}</div>
-            </Card>
-            <Card className="p-6 bg-white">
-              <div className="text-sm text-gray-600 mb-2">합병증 건수</div>
-              <div className="text-2xl md:text-4xl">{`${stats.complications_count} 건`}</div>
-            </Card>
-          </>
-        )}
+        <Card className="p-6 bg-white">
+          <div className="text-sm text-gray-600 mb-2">총 수술 건수</div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <div className="text-2xl md:text-4xl">{stats.total_surgeries}</div>}
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="text-sm text-gray-600 mb-2">이번 달 수술</div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <div className="text-2xl md:text-4xl">{stats.monthly_surgeries}</div>}
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="text-sm text-gray-600 mb-2">PROM 대기 건수</div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <div className="text-2xl md:text-4xl">{`${stats.prom_pending_cases} 건`}</div>}
+        </Card>
+        <Card className="p-6 bg-white">
+          <div className="text-sm text-gray-600 mb-2">합병증 건수</div>
+          {loading ? <div className="h-6 w-6 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin mt-2" /> : <div className="text-2xl md:text-4xl">{`${stats.complications_count} 건`}</div>}
+        </Card>
       </div>
 
       {/* Charts Row */}
