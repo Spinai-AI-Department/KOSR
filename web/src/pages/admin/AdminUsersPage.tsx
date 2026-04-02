@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 function statusBadge(isActive: boolean) {
   return isActive
     ? <Badge variant="outline" className="text-green-600 border-green-400">활성</Badge>
-    : <Badge variant="outline" className="text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">정지</Badge>;
+    : <Badge variant="outline" className="text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">비활성화</Badge>;
 }
 
 function actionBadge(action: string) {
@@ -338,7 +338,7 @@ export function AdminUsersPage() {
                           {actionLoading === user.user_id ? (
                             <Loader2 className="w-3 h-3 animate-spin" />
                           ) : user.is_active ? (
-                            <><PauseCircle className="w-3 h-3 mr-1" />정지</>
+                            <><PauseCircle className="w-3 h-3 mr-1" />비활성화</>
                           ) : (
                             <><PlayCircle className="w-3 h-3 mr-1" />활성화</>
                           )}
