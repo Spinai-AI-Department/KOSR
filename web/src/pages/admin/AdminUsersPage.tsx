@@ -324,7 +324,7 @@ export function AdminUsersPage() {
                       {user.last_login_at ? new Date(user.last_login_at).toLocaleDateString("ko-KR") : "—"}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      {user.approval_status === "APPROVED" && (
+                      {user.approval_status === "APPROVED" && !(user.is_active && (user.role_code === "ADMIN" || user.role_code === "STEERING")) && (
                         <Button
                           size="sm"
                           variant="outline"

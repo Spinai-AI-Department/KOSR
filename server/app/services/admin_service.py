@@ -258,6 +258,15 @@ async def deactivate_user(conn: AsyncConnection, user_id) -> None:
 
 async def toggle_user_active(conn: AsyncConnection, user_id, *, activate: bool) -> dict[str, Any]:
     """Suspend (is_active=false) or activate (is_active=true) an approved user."""
+    if not activate:
+        role = await fetch_val(
+            conn,
+            "SELECT role_code::text FROM auth.user_account WHERE user_id = %s",
+            (str(user_id),),
+        )
+        if role in ("ADMIN", "STEERING"):
+            raise ValidationError("관리자 계정은 정지할 수 없습니다.", error_code="USER_ADMIN_SUSPEND_FORBIDDEN")
+
     row = await fetch_one(
         conn,
         """
