@@ -20,7 +20,7 @@ async def list_users(
     hospital_code: str | None = None,
     keyword: str | None = None,
 ) -> AdminUserListResponse:
-    where = ["deleted_at IS NULL"]
+    where: list[str] = []
     params: list[Any] = []
     if hospital_code:
         where.append("hospital_code = %s")
@@ -30,11 +30,11 @@ async def list_users(
         pattern = f"%{keyword}%"
         params.extend([pattern, pattern, pattern])
 
-    where_sql = " AND ".join(where)
+    where_sql = ("WHERE " + " AND ".join(where)) if where else ""
     total = int(
         await fetch_val(
             conn,
-            f"SELECT count(*) FROM auth.user_account WHERE {where_sql}",
+            f"SELECT count(*) FROM auth.user_account {where_sql}",
             params,
             default=0,
         )
@@ -47,7 +47,7 @@ async def list_users(
                email, phone, is_active, is_locked, is_first_login,
                approval_status::text AS approval_status, created_at, last_login_at
         FROM auth.user_account
-        WHERE {where_sql}
+        {where_sql}
         ORDER BY created_at DESC
         LIMIT %s OFFSET %s
         """,
