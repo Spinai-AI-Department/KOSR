@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { Search, ChevronDown, Edit, MoreHorizontal, Plus, X } from "lucide-react";
+import { Search, ChevronDown, Edit, MoreHorizontal, Plus, X, Calendar } from "lucide-react";
 import { patientService, type Patient as ApiPatient } from "../api/patients";
 import { dashboardService } from "../api/dashboard";
 import { ApiValidationError, translateValidationMsg } from "../api/client";
