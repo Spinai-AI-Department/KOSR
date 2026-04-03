@@ -508,7 +508,7 @@ export function SurgeryDataEntry() {
           <div>
             <FieldLabel label={searchParams.get('patient') ? "환자 번호 (자동입력)" : "환자 번호"} />
             {searchParams.get('patient') ? (
-              <input type="text" value={(passedPatient?.registrationId as string) ?? patientId} readOnly className={`${inputCls} bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
+              <input type="text" value={(passedPatient?.id as string) ?? patientId} readOnly className={`${inputCls} bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
             ) : (
               <>
                 <input type="text" data-field="patientId" value={patientId} onChange={(e) => { setPatientId(e.target.value); setFieldErrors((prev) => { const { patientId: _, ...rest } = prev; return rest; }); }} placeholder="예: 201933070" className={`${inputCls} ${fieldErrors['patientId'] ? 'border-red-500 ring-1 ring-red-500' : ''}`} />
