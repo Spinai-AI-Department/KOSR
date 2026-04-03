@@ -14,6 +14,7 @@ export interface PatientListItem {
   surgery_date: string | null
   diagnosis_code: string | null
   procedure_code: string | null
+  surgeon_name: string | null
   is_locked: boolean
   has_memo: boolean
   db_status: Record<string, unknown>
@@ -31,6 +32,7 @@ export interface Patient {
   surgeryDate: string | null
   diagnosisCode: string | null
   procedureCode: string | null
+  surgeonName: string | null
   isLocked: boolean
   hasMemo: boolean
   dbStatus: Record<string, unknown>
@@ -66,6 +68,7 @@ export interface PatientListParams {
   sex?: string
   surgery_date_from?: string
   surgery_date_to?: string
+  surgeon_name?: string
   spinal_region?: string
   asa_class?: string
   approach_type?: string
@@ -105,6 +108,7 @@ function mapPatient(p: PatientListItem): Patient {
     surgeryDate: p.surgery_date,
     diagnosisCode: p.diagnosis_code,
     procedureCode: p.procedure_code,
+    surgeonName: p.surgeon_name,
     isLocked: p.is_locked,
     hasMemo: p.has_memo,
     dbStatus: p.db_status,

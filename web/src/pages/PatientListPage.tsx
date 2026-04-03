@@ -21,6 +21,7 @@ interface Patient {
   surgeryDate: string | null;
   diagnosisCode: string | null;
   procedureCode: string | null;
+  surgeonName: string | null;
   preOp: FollowUpStatus;
   m1: FollowUpStatus;
   m3: FollowUpStatus;
@@ -115,6 +116,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
   const [filterDiagnosis, setFilterDiagnosis] = useState("");
   const [filterProcedure, setFilterProcedure] = useState("");
   const [filterFollowup, setFilterFollowup] = useState("");
+  const [filterSurgeonName, setFilterSurgeonName] = useState("");
   const [filterSpinalRegion, setFilterSpinalRegion] = useState("");
   const [filterAsaClass, setFilterAsaClass] = useState("");
   const [filterApproachType, setFilterApproachType] = useState("");
@@ -124,14 +126,14 @@ function PatientListTab({ cache, onCacheUpdate }: {
 
   const activeFilterCount = [
     filterSex, filterSurgeryFrom || filterSurgeryTo, filterDiagnosis, filterProcedure,
-    filterFollowup, filterSpinalRegion, filterAsaClass, filterApproachType,
+    filterFollowup, filterSurgeonName, filterSpinalRegion, filterAsaClass, filterApproachType,
     filterComplication, filterReoperation, filterImplant,
   ].filter(Boolean).length;
 
   const resetFilters = () => {
     setFilterSex(""); setFilterSurgeryFrom(""); setFilterSurgeryTo("");
     setFilterDiagnosis(""); setFilterProcedure(""); setFilterFollowup("");
-    setFilterSpinalRegion(""); setFilterAsaClass(""); setFilterApproachType("");
+    setFilterSurgeonName(""); setFilterSpinalRegion(""); setFilterAsaClass(""); setFilterApproachType("");
     setFilterComplication(""); setFilterReoperation(""); setFilterImplant("");
     setSearchId(""); setSearchName("");
     setPage(1);
@@ -220,6 +222,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
           spinal_region: filterSpinalRegion || undefined,
           asa_class: filterAsaClass || undefined,
           approach_type: filterApproachType || undefined,
+          surgeon_name: filterSurgeonName || undefined,
           complication_yn: filterComplication || undefined,
           reoperation_yn: filterReoperation || undefined,
           implant_used_yn: filterImplant || undefined,
@@ -287,6 +290,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
           id: p.id, caseId: p.caseId, registrationId: p.registrationId, name: p.name,
           genderAge: p.genderAge, visitDate: p.visitDate,
           surgeryDate: p.surgeryDate, diagnosisCode: p.diagnosisCode, procedureCode: p.procedureCode,
+          surgeonName: p.surgeonName,
           preOp: mapTimepointStatus('PRE_OP'),
           m1: mapTimepointStatus('POST_1M'),
           m3: mapTimepointStatus('POST_3M'),
@@ -310,16 +314,16 @@ function PatientListTab({ cache, onCacheUpdate }: {
     } finally {
       setListLoading(false);
     }
-  }, [token, searchId, searchName, filterSex, filterSurgeryFrom, filterSurgeryTo, filterDiagnosis, filterProcedure, filterFollowup, filterSpinalRegion, filterAsaClass, filterApproachType, filterComplication, filterReoperation, filterImplant, page, onCacheUpdate]);
+  }, [token, searchId, searchName, filterSex, filterSurgeryFrom, filterSurgeryTo, filterDiagnosis, filterProcedure, filterFollowup, filterSurgeonName, filterSpinalRegion, filterAsaClass, filterApproachType, filterComplication, filterReoperation, filterImplant, page, onCacheUpdate]);
 
   // Skip initial fetch if mounted with cached data (default filters, page 1)
   const skipInitialFetch = useCallback(() => {
     return hasCacheRef && page === 1 && searchId === '' && searchName === ''
       && !filterSex && !filterSurgeryFrom && !filterSurgeryTo
       && !filterDiagnosis && !filterProcedure && !filterFollowup
-      && !filterSpinalRegion && !filterAsaClass && !filterApproachType
+      && !filterSurgeonName && !filterSpinalRegion && !filterAsaClass && !filterApproachType
       && !filterComplication && !filterReoperation && !filterImplant;
-  }, [hasCacheRef, page, searchId, searchName, filterSex, filterSurgeryFrom, filterSurgeryTo, filterDiagnosis, filterProcedure, filterFollowup, filterSpinalRegion, filterAsaClass, filterApproachType, filterComplication, filterReoperation, filterImplant]);
+  }, [hasCacheRef, page, searchId, searchName, filterSex, filterSurgeryFrom, filterSurgeryTo, filterDiagnosis, filterProcedure, filterFollowup, filterSurgeonName, filterSpinalRegion, filterAsaClass, filterApproachType, filterComplication, filterReoperation, filterImplant]);
 
   useEffect(() => {
     if (skipInitialFetch()) return;
@@ -715,6 +719,28 @@ function PatientListTab({ cache, onCacheUpdate }: {
           )}
         </div>
 
+        {/* 집도의 */}
+        <div className="relative z-20">
+          <button onClick={() => setOpenDropdown(openDropdown === 'surgeon' ? null : 'surgeon')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${filterSurgeonName ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-500'}`}
+          >
+            {filterSurgeonName ? `집도의: ${filterSurgeonName}` : '집도의'}
+            {filterSurgeonName ? <X className="w-3 h-3" onClick={(e) => { e.stopPropagation(); setFilterSurgeonName(''); setPage(1); }} /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+          {openDropdown === 'surgeon' && (
+            <div className="absolute top-full left-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg p-3 min-w-[200px]">
+              <input
+                type="text"
+                placeholder="집도의 이름 검색"
+                value={filterSurgeonName}
+                onChange={(e) => { setFilterSurgeonName(e.target.value); setPage(1); }}
+                autoFocus
+                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+          )}
+        </div>
+
         {/* 초기화 */}
         {activeFilterCount > 0 && (
           <button onClick={resetFilters} className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
@@ -737,6 +763,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
                 <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">수술일</th>
                 <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">진단코드</th>
                 <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">수술코드</th>
+                <th className="text-left px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">집도의</th>
                 <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">Pre-op</th>
                 <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">1M</th>
                 <th className="text-center px-3 py-3.5 text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">3M</th>
@@ -748,7 +775,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
             <tbody>
               {listLoading && (
                 <tr>
-                  <td colSpan={14} className="py-16 text-center">
+                  <td colSpan={15} className="py-16 text-center">
                     <div className="inline-block h-12 w-12 rounded-full border-[3px] border-blue-200 border-t-blue-400 animate-spin" />
                   </td>
                 </tr>
@@ -766,6 +793,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
                   <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.surgeryDate || "-"}</td>
                   <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.diagnosisCode || "-"}</td>
                   <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.procedureCode || "-"}</td>
+                  <td className="text-left px-4 py-3.5 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">{patient.surgeonName || "-"}</td>
                   <td className="px-3 py-3.5 text-center"><FollowUpCell status={patient.preOp} timepointKey="preOp" followupTimepoints={patient.followupTimepoints} overdueDays={patient.overdueInfo.preOp} /></td>
                   <td className="px-3 py-3.5 text-center"><FollowUpCell status={patient.m1} timepointKey="m1" followupTimepoints={patient.followupTimepoints} overdueDays={patient.overdueInfo.m1} /></td>
                   <td className="px-3 py-3.5 text-center"><FollowUpCell status={patient.m3} timepointKey="m3" followupTimepoints={patient.followupTimepoints} overdueDays={patient.overdueInfo.m3} /></td>
@@ -823,7 +851,7 @@ function PatientListTab({ cache, onCacheUpdate }: {
               ))}
               {filtered.length === 0 && !listLoading && (
                 <tr>
-                  <td colSpan={14} className="px-5 py-10 text-center text-sm text-gray-400 dark:text-gray-500">
+                  <td colSpan={15} className="px-5 py-10 text-center text-sm text-gray-400 dark:text-gray-500">
                     검색 결과가 없습니다.
                   </td>
                 </tr>

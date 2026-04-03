@@ -139,6 +139,7 @@ class PatientListItem(APIModel):
     surgery_date: date | None = None
     diagnosis_code: str | None = None
     procedure_code: str | None = None
+    surgeon_name: str | None = None
     is_locked: bool
     has_memo: bool
     db_status: dict

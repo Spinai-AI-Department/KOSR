@@ -62,6 +62,7 @@ async def list_cases(
     sex: str | None = None,
     surgery_date_from: str | None = None,
     surgery_date_to: str | None = None,
+    surgeon_name: str | None = None,
     spinal_region: str | None = None,
     asa_class: str | None = None,
     approach_type: str | None = None,
@@ -90,6 +91,9 @@ async def list_cases(
     if surgery_date_to:
         filters.append("surgery_date <= %s")
         params.append(surgery_date_to)
+    if surgeon_name:
+        filters.append("case_id IN (SELECT case_id FROM clinical.case_initial_form WHERE additional_attributes->>'surgeon_name' ILIKE %s)")
+        params.append(f"%{surgeon_name}%")
     if spinal_region:
         filters.append("case_id IN (SELECT case_id FROM clinical.case_record WHERE spinal_region = %s)")
         params.append(spinal_region)
@@ -168,6 +172,7 @@ async def list_cases(
     case_ids = [row["case_id"] for row in rows] if rows else []
     prom_by_case: dict[Any, dict[str, str]] = {}
     fu_tp_by_case: dict[Any, list[str]] = {}
+    surgeon_by_case: dict[Any, str | None] = {}
     if case_ids:
         prom_rows = await fetch_all(
             conn,
@@ -187,14 +192,15 @@ async def list_cases(
             status = pr["token_status"]
             prom_by_case.setdefault(cid, {})[tp] = status
 
-        # Fetch followup_timepoints from additional_attributes
+        # Fetch surgeon_name and followup_timepoints from additional_attributes
         fu_rows = await fetch_all(
             conn,
             """
-            SELECT case_id, additional_attributes->'followup_timepoints' AS fu_tp
+            SELECT case_id,
+                   additional_attributes->'followup_timepoints' AS fu_tp,
+                   additional_attributes->>'surgeon_name' AS surgeon_name
             FROM clinical.case_initial_form
             WHERE case_id = ANY(%s)
-              AND additional_attributes ? 'followup_timepoints'
             """,
             (case_ids,),
         )
@@ -203,12 +209,14 @@ async def list_cases(
             "Pre-op": "PRE_OP", "1개월 (1m)": "POST_1M", "3개월 (3m)": "POST_3M",
             "6개월 (6m)": "POST_6M", "1년 (1yr)": "POST_1Y",
         }
+        surgeon_by_case: dict[Any, str | None] = {}
         for fr in (fu_rows or []):
             tp_list = fr["fu_tp"]
             if isinstance(tp_list, list):
                 fu_tp_by_case[fr["case_id"]] = list(dict.fromkeys(
                     _label_to_code.get(tp, tp) for tp in tp_list
                 ))
+            surgeon_by_case[fr["case_id"]] = fr["surgeon_name"]
 
     items: list[PatientListItem] = []
     no = total - offset
@@ -252,6 +260,7 @@ async def list_cases(
                 surgery_date=row["surgery_date"],
                 diagnosis_code=row["diagnosis_code"],
                 procedure_code=row["procedure_code"],
+                surgeon_name=surgeon_by_case.get(row["case_id"]),
                 is_locked=row["is_locked"],
                 has_memo=row["has_memo"],
                 db_status={
