@@ -474,6 +474,10 @@ function PatientListTab({ cache, onCacheUpdate }: {
           onChange={(e) => { setSearchName(e.target.value); setPage(1); }}
           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
         />
+        <input type="text" placeholder="집도의" value={filterSurgeonName}
+          onChange={(e) => { setFilterSurgeonName(e.target.value); setPage(1); }}
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+        />
         <button onClick={() => setShowNewPatientModal(true)}
           className="ml-auto flex items-center gap-2 px-5 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg text-sm hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
         >
@@ -715,28 +719,6 @@ function PatientListTab({ cache, onCacheUpdate }: {
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${filterImplant === opt.value ? 'text-blue-600 font-medium' : 'text-gray-700 dark:text-gray-300'}`}
                 >{opt.label}</button>
               ))}
-            </div>
-          )}
-        </div>
-
-        {/* 집도의 */}
-        <div className="relative z-20">
-          <button onClick={() => setOpenDropdown(openDropdown === 'surgeon' ? null : 'surgeon')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors ${filterSurgeonName ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-gray-500'}`}
-          >
-            {filterSurgeonName ? `집도의: ${filterSurgeonName}` : '집도의'}
-            {filterSurgeonName ? <X className="w-3 h-3" onClick={(e) => { e.stopPropagation(); setFilterSurgeonName(''); setPage(1); }} /> : <ChevronDown className="w-3 h-3" />}
-          </button>
-          {openDropdown === 'surgeon' && (
-            <div className="absolute top-full left-0 mt-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-lg p-3 min-w-[200px]">
-              <input
-                type="text"
-                placeholder="집도의 이름 검색"
-                value={filterSurgeonName}
-                onChange={(e) => { setFilterSurgeonName(e.target.value); setPage(1); }}
-                autoFocus
-                className="w-full px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
             </div>
           )}
         </div>
